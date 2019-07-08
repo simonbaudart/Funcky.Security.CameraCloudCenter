@@ -7,18 +7,36 @@
 namespace Funcky.Security.CameraCloudCenter
 {
     using System;
+    using System.IO;
     using System.Linq;
+
+    using Funcky.Security.CameraCloudCenter.Core;
+    using Funcky.Security.CameraCloudCenter.Jobs;
+
+    using Hangfire;
+    using Hangfire.MemoryStorage;
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Manage the application startup
     /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
+        public IConfigurationRoot Configuration { get; private set; }
+
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
@@ -31,6 +49,12 @@ namespace Funcky.Security.CameraCloudCenter
                 app.UseDeveloperExceptionPage();
             }
 
+            var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath).AddJsonFile("appsettings.json", true, true).AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
+            builder.AddEnvironmentVariables();
+            this.Configuration = builder.Build();
+
+            this.StartHangfire(app);
+
             app.Run(async context => { await context.Response.WriteAsync("Hello World!"); });
         }
 
@@ -41,6 +65,41 @@ namespace Funcky.Security.CameraCloudCenter
         /// <param name="services">The services.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            this.ConfigureHangfire(services);
+        }
+
+        /// <summary>
+        /// Configures the hangfire.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        private void ConfigureHangfire(IServiceCollection services)
+        {
+            services.AddHangfire(x => x.UseMemoryStorage());
+            services.AddHangfireServer();
+        }
+
+        /// <summary>
+        /// Starts the hangfire.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <exception cref="System.ApplicationException">The configuration file {configurationFilePath} does not exists</exception>
+        private void StartHangfire(IApplicationBuilder app)
+        {
+            app.UseHangfireDashboard();
+
+            var configurationFilePath = this.Configuration.GetConnectionString("CameraConfigurations");
+
+            if (!File.Exists(configurationFilePath))
+            {
+                throw new ApplicationException($"The configuration file {configurationFilePath} does not exists");
+            }
+
+            var configurations = JsonConvert.DeserializeObject<CameraConfiguration[]>(File.ReadAllText(configurationFilePath));
+
+            foreach (var configuration in configurations)
+            {
+                RecurringJob.AddOrUpdate<CameraInputProcessor>($"PROCESS INPUT : {configuration.Name}", x => x.Process(configuration), Cron.Minutely(), TimeZoneInfo.Utc);
+            }
         }
     }
 }
