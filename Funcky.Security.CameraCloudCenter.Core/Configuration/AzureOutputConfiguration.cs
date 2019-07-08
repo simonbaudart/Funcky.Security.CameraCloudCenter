@@ -33,5 +33,14 @@ namespace Funcky.Security.CameraCloudCenter.Core.Configuration
         /// </value>
         [DataMember(Name = "container")]
         public string Container { get; set; }
+
+        /// <summary>
+        /// Gets or sets the retention.
+        /// </summary>
+        /// <value>
+        /// The retention.
+        /// </value>
+        [DataMember(Name = "retention")]
+        public int Retention { get; set; }
     }
 }

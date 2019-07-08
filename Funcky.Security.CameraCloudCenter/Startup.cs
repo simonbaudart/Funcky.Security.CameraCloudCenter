@@ -100,6 +100,7 @@ namespace Funcky.Security.CameraCloudCenter
             foreach (var configuration in configurations)
             {
                 RecurringJob.AddOrUpdate<CameraInputProcessor>($"PROCESS INPUT : {configuration.Name}", x => x.Process(configuration), Cron.Minutely(), TimeZoneInfo.Utc);
+                RecurringJob.AddOrUpdate<CameraOutputCleanup>($"PROCESS CLEAN : {configuration.Name}", x => x.Process(configuration), Cron.Hourly(), TimeZoneInfo.Utc);
             }
         }
     }
