@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Funcky.Security.CameraCloudCenter.Core
+namespace Funcky.Security.CameraCloudCenter.Core.Configuration
 {
     using System;
     using System.Linq;
@@ -16,6 +16,15 @@ namespace Funcky.Security.CameraCloudCenter.Core
     [DataContract]
     public class CameraConfiguration
     {
+        /// <summary>
+        /// Gets or sets the azure output.
+        /// </summary>
+        /// <value>
+        /// The azure output.
+        /// </value>
+        [DataMember(Name = "azureOutput")]
+        public AzureOutputConfiguration AzureOutput { get; set; }
+
         /// <summary>
         /// Gets or sets the name of the camera.
         /// </summary>

@@ -11,6 +11,7 @@ namespace Funcky.Security.CameraCloudCenter
     using System.Linq;
 
     using Funcky.Security.CameraCloudCenter.Core;
+    using Funcky.Security.CameraCloudCenter.Core.Configuration;
     using Funcky.Security.CameraCloudCenter.Jobs;
 
     using Hangfire;
