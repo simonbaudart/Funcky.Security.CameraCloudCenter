@@ -7,9 +7,14 @@
 namespace Funcky.Security.CameraCloudCenter.Core.OutputManager
 {
     using System;
+    using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Funcky.Security.CameraCloudCenter.Core.Configuration;
+
+    using Microsoft.WindowsAzure.Storage;
+    using Microsoft.WindowsAzure.Storage.Blob;
 
     /// <summary>
     /// Output to Azure
@@ -34,9 +39,28 @@ namespace Funcky.Security.CameraCloudCenter.Core.OutputManager
         /// Uploads the file.
         /// </summary>
         /// <param name="localPath">The local path.</param>
-        public void UploadFile(string localPath)
+        /// <returns>The task to wait in async</returns>
+        public async Task UploadFile(string localPath)
         {
+            var fileInfo = new FileInfo(localPath);
 
+            if (!fileInfo.Exists)
+            {
+                return;
+            }
+
+            var storageAccount = CloudStorageAccount.Parse(this.azureOutputConfiguration.ConnectionString);
+            var storageClient = storageAccount.CreateCloudBlobClient();
+            var container = storageClient.GetContainerReference(this.azureOutputConfiguration.Container);
+
+            await container.CreateIfNotExistsAsync();
+
+            var path = $"{fileInfo.CreationTime:yyyy}/{fileInfo.CreationTime:yyyy-MM-dd}/";
+            var blobDirectory = container.GetDirectoryReference(path);
+
+            var blob = blobDirectory.GetBlockBlobReference(fileInfo.Name);
+
+            await blob.UploadFromFileAsync(fileInfo.FullName);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Funcky.Security.CameraCloudCenter.Jobs
             {
                 foreach (var file in Directory.GetFiles(cameraConfiguration.SourceDirectory))
                 {
-                    azureOutputManager?.UploadFile(file);
+                    azureOutputManager?.UploadFile(file).Wait();
 
                     File.Delete(file);
                 }
