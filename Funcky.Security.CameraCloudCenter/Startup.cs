@@ -10,7 +10,6 @@ namespace Funcky.Security.CameraCloudCenter
     using System.IO;
     using System.Linq;
 
-    using Funcky.Security.CameraCloudCenter.Core;
     using Funcky.Security.CameraCloudCenter.Core.Configuration;
     using Funcky.Security.CameraCloudCenter.Jobs;
 
@@ -86,7 +85,7 @@ namespace Funcky.Security.CameraCloudCenter
         /// <exception cref="System.ApplicationException">The configuration file {configurationFilePath} does not exists</exception>
         private void StartHangfire(IApplicationBuilder app)
         {
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new EveryOneAuthorization() } });
 
             var configurationFilePath = this.Configuration.GetConnectionString("CameraConfigurations");
 
