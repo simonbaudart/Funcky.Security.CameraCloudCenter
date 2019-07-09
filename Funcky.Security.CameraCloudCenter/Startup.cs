@@ -24,6 +24,8 @@ namespace Funcky.Security.CameraCloudCenter
 
     using Newtonsoft.Json;
 
+    using GlobalConfiguration = Funcky.Security.CameraCloudCenter.Core.Configuration.GlobalConfiguration;
+
     /// <summary>
     /// Manage the application startup
     /// </summary>
@@ -52,6 +54,8 @@ namespace Funcky.Security.CameraCloudCenter
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath).AddJsonFile("appsettings.json", true, true).AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
             builder.AddEnvironmentVariables();
             this.Configuration = builder.Build();
+
+            GlobalConfiguration.Instance = new GlobalConfiguration { FFProbePath = this.Configuration.GetConnectionString("ffprobe") };
 
             this.StartHangfire(app);
 

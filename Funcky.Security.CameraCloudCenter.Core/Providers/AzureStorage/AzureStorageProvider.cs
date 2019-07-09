@@ -12,6 +12,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
     using System.Linq;
     using System.Threading.Tasks;
 
+    using Funcky.Security.CameraCloudCenter.Core.Processor;
     using Funcky.Security.CameraCloudCenter.Providers.AzureStorage;
 
     using Microsoft.WindowsAzure.Storage;
@@ -192,7 +193,8 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
             switch (containerType)
             {
                 case ContainerRecording:
-                    blob.Metadata.Add(FootageDurationMetaData, "1");
+                    var videoInfo = new VideoInfo(fileInfo);
+                    blob.Metadata.Add(FootageDurationMetaData, videoInfo.GetDuration().TotalSeconds.ToString(CultureInfo.InvariantCulture));
                     break;
 
                 default:
