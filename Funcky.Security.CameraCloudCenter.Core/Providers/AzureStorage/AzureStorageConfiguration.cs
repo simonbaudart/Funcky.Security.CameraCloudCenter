@@ -1,10 +1,10 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="AzureOutputConfiguration.cs" company="Funcky">
+//  <copyright file="AzureStorageConfiguration.cs" company="Funcky">
 //  Copyright (c) Funcky. All rights reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Funcky.Security.CameraCloudCenter.Core.Configuration
+namespace Funcky.Security.CameraCloudCenter.Providers.AzureStorage
 {
     using System;
     using System.Linq;
@@ -14,7 +14,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Configuration
     /// Represent the configuration of an azure storage
     /// </summary>
     [DataContract]
-    public class AzureOutputConfiguration
+    public class AzureStorageConfiguration
     {
         /// <summary>
         /// Gets or sets the connection string.

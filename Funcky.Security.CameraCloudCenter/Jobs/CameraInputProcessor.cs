@@ -11,7 +11,6 @@ namespace Funcky.Security.CameraCloudCenter.Jobs
     using System.Linq;
 
     using Funcky.Security.CameraCloudCenter.Core.Configuration;
-    using Funcky.Security.CameraCloudCenter.Core.OutputManager;
 
     /// <summary>
     /// Class that manage an input of a security camera
@@ -29,13 +28,13 @@ namespace Funcky.Security.CameraCloudCenter.Jobs
         /// <param name="cameraConfiguration">The camera configuration.</param>
         public void Process(CameraConfiguration cameraConfiguration)
         {
-            var azureOutputManager = cameraConfiguration.AzureOutput == null ? null : new AzureOutputManager(cameraConfiguration.AzureOutput);
+            var storageProvider = cameraConfiguration.GetStorageProvider();
 
             lock (LockCameraInput)
             {
-                foreach (var file in Directory.GetFiles(cameraConfiguration.SourceDirectory))
+                foreach (var file in Directory.GetFiles(cameraConfiguration.SourceDirectory, "*.*", SearchOption.AllDirectories))
                 {
-                    azureOutputManager?.UploadFile(file).Wait();
+                    storageProvider.UploadFile(file).Wait();
 
                     File.Delete(file);
                 }

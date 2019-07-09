@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Funcky.Security.CameraCloudCenter", "Funcky.Security.CameraCloudCenter\Funcky.Security.CameraCloudCenter.csproj", "{6919EF7F-565C-40E3-AE1C-7E5DF99B1814}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Funcky.Security.CameraCloudCenter.Core", "Funcky.Security.CameraCloudCenter.Core\Funcky.Security.CameraCloudCenter.Core.csproj", "{6BA42027-F391-48B9-8CC4-E8690F135389}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Funcky.Security.CameraCloudCenter.Core", "Funcky.Security.CameraCloudCenter.Core\Funcky.Security.CameraCloudCenter.Core.csproj", "{6BA42027-F391-48B9-8CC4-E8690F135389}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

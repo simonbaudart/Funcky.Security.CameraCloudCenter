@@ -7,11 +7,9 @@
 namespace Funcky.Security.CameraCloudCenter.Jobs
 {
     using System;
-    using System.IO;
     using System.Linq;
 
     using Funcky.Security.CameraCloudCenter.Core.Configuration;
-    using Funcky.Security.CameraCloudCenter.Core.OutputManager;
 
     /// <summary>
     /// Clean each camera output
@@ -29,11 +27,11 @@ namespace Funcky.Security.CameraCloudCenter.Jobs
         /// <param name="cameraConfiguration">The camera configuration.</param>
         public void Process(CameraConfiguration cameraConfiguration)
         {
-            var azureOutputManager = cameraConfiguration.AzureOutput == null ? null : new AzureOutputManager(cameraConfiguration.AzureOutput);
+            var storageProvider = cameraConfiguration.GetStorageProvider();
 
             lock (LockCameraOutput)
             {
-                azureOutputManager?.Cleanup().Wait();
+                storageProvider?.Cleanup().Wait();
             }
         }
     }

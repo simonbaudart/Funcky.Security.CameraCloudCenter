@@ -1,10 +1,10 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="AzureOutputManager.cs" company="Funcky">
+//  <copyright file="AzureStorageProvider.cs" company="Funcky">
 //  Copyright (c) Funcky. All rights reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Funcky.Security.CameraCloudCenter.Core.OutputManager
+namespace Funcky.Security.CameraCloudCenter.Providers.AzureStorage
 {
     using System;
     using System.Globalization;
@@ -12,7 +12,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.OutputManager
     using System.Linq;
     using System.Threading.Tasks;
 
-    using Funcky.Security.CameraCloudCenter.Core.Configuration;
+    using Funcky.Security.CameraCloudCenter.Core.Providers;
 
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
@@ -20,7 +20,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.OutputManager
     /// <summary>
     /// Output to Azure
     /// </summary>
-    public class AzureOutputManager
+    public class AzureStorageProvider : IFootageStorage
     {
         /// <summary>
         /// The footage date format
@@ -35,15 +35,15 @@ namespace Funcky.Security.CameraCloudCenter.Core.OutputManager
         /// <summary>
         /// The azure output configuration
         /// </summary>
-        private readonly AzureOutputConfiguration azureOutputConfiguration;
+        private readonly AzureStorageConfiguration azureStorageConfiguration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureOutputManager" /> class.
+        /// Initializes a new instance of the <see cref="AzureStorageProvider" /> class.
         /// </summary>
-        /// <param name="azureOutputConfiguration">The azure output configuration.</param>
-        public AzureOutputManager(AzureOutputConfiguration azureOutputConfiguration)
+        /// <param name="azureStorageConfiguration">The azure storage configuration.</param>
+        public AzureStorageProvider(AzureStorageConfiguration azureStorageConfiguration)
         {
-            this.azureOutputConfiguration = azureOutputConfiguration;
+            this.azureStorageConfiguration = azureStorageConfiguration;
         }
 
         /// <summary>
@@ -52,9 +52,9 @@ namespace Funcky.Security.CameraCloudCenter.Core.OutputManager
         /// <returns>The task to wait</returns>
         public async Task Cleanup()
         {
-            var storageAccount = CloudStorageAccount.Parse(this.azureOutputConfiguration.ConnectionString);
+            var storageAccount = CloudStorageAccount.Parse(this.azureStorageConfiguration.ConnectionString);
             var storageClient = storageAccount.CreateCloudBlobClient();
-            var container = storageClient.GetContainerReference(this.azureOutputConfiguration.Container);
+            var container = storageClient.GetContainerReference(this.azureStorageConfiguration.Container);
 
             BlobContinuationToken continuationToken = null;
 
@@ -71,7 +71,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.OutputManager
                         {
                             if (DateTime.TryParseExact(footageDateValue, FootageDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var footageDate))
                             {
-                                if (footageDate < DateTime.UtcNow.AddDays(-this.azureOutputConfiguration.Retention))
+                                if (footageDate < DateTime.UtcNow.AddDays(-this.azureStorageConfiguration.Retention))
                                 {
                                     await blob.DeleteAsync();
                                 }
@@ -105,9 +105,9 @@ namespace Funcky.Security.CameraCloudCenter.Core.OutputManager
                 return;
             }
 
-            var storageAccount = CloudStorageAccount.Parse(this.azureOutputConfiguration.ConnectionString);
+            var storageAccount = CloudStorageAccount.Parse(this.azureStorageConfiguration.ConnectionString);
             var storageClient = storageAccount.CreateCloudBlobClient();
-            var container = storageClient.GetContainerReference(this.azureOutputConfiguration.Container);
+            var container = storageClient.GetContainerReference(this.azureStorageConfiguration.Container);
 
             await container.CreateIfNotExistsAsync();
 
