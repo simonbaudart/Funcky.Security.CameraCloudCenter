@@ -53,6 +53,11 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         private const string FootageDateMetaData = "FootageDate";
 
         /// <summary>
+        /// The footage duration meta data
+        /// </summary>
+        private const string FootageDurationMetaData = "FootageDuration";
+
+        /// <summary>
         /// The azure output configuration
         /// </summary>
         private readonly AzureStorageConfiguration azureStorageConfiguration;
@@ -140,8 +145,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 
             await blob.UploadFromFileAsync(fileInfo.FullName);
 
-            blob.Metadata.Add(FootageDateMetaData, fileInfo.CreationTime.ToUniversalTime().ToString(FootageDateFormat, CultureInfo.InvariantCulture));
-            await blob.SetMetadataAsync();
+            await this.SetMetadata(blob, containerType, fileInfo);
         }
 
         /// <summary>
@@ -172,6 +176,31 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
             }
 
             return ContainerOthers;
+        }
+
+        /// <summary>
+        /// Sets the metadata.
+        /// </summary>
+        /// <param name="blob">The BLOB.</param>
+        /// <param name="containerType">Type of the container.</param>
+        /// <param name="fileInfo">The file information.</param>
+        /// <returns>The task to wait for in async</returns>
+        private async Task SetMetadata(CloudBlockBlob blob, string containerType, FileInfo fileInfo)
+        {
+            blob.Metadata.Add(FootageDateMetaData, fileInfo.CreationTime.ToUniversalTime().ToString(FootageDateFormat, CultureInfo.InvariantCulture));
+
+            switch (containerType)
+            {
+                case ContainerRecording:
+                    blob.Metadata.Add(FootageDurationMetaData, "1");
+                    break;
+
+                default:
+                    blob.Metadata.Add(FootageDurationMetaData, "1");
+                    break;
+            }
+
+            await blob.SetMetadataAsync();
         }
     }
 }
