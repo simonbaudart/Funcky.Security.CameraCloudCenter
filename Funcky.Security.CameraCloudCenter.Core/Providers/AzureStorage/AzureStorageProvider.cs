@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Funcky.Security.CameraCloudCenter.Providers.AzureStorage
+namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 {
     using System;
     using System.Globalization;
@@ -12,7 +12,7 @@ namespace Funcky.Security.CameraCloudCenter.Providers.AzureStorage
     using System.Linq;
     using System.Threading.Tasks;
 
-    using Funcky.Security.CameraCloudCenter.Core.Providers;
+    using Funcky.Security.CameraCloudCenter.Providers.AzureStorage;
 
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
@@ -22,6 +22,26 @@ namespace Funcky.Security.CameraCloudCenter.Providers.AzureStorage
     /// </summary>
     public class AzureStorageProvider : IFootageStorage
     {
+        /// <summary>
+        /// The container event
+        /// </summary>
+        private const string ContainerEvent = "event";
+
+        /// <summary>
+        /// The container others
+        /// </summary>
+        private const string ContainerOthers = "others";
+
+        /// <summary>
+        /// The container recording
+        /// </summary>
+        private const string ContainerRecording = "recording";
+
+        /// <summary>
+        /// The container snap
+        /// </summary>
+        private const string ContainerSnap = "snap";
+
         /// <summary>
         /// The footage date format
         /// </summary>
@@ -111,7 +131,9 @@ namespace Funcky.Security.CameraCloudCenter.Providers.AzureStorage
 
             await container.CreateIfNotExistsAsync();
 
-            var path = $"{fileInfo.CreationTime:yyyy}/{fileInfo.CreationTime:yyyy-MM-dd}/";
+            var containerType = this.GetContainerType(fileInfo);
+
+            var path = $"{fileInfo.CreationTime:yyyy}/{fileInfo.CreationTime:yyyy-MM-dd}/{containerType}/";
             var blobDirectory = container.GetDirectoryReference(path);
 
             var blob = blobDirectory.GetBlockBlobReference(fileInfo.Name);
@@ -120,6 +142,36 @@ namespace Funcky.Security.CameraCloudCenter.Providers.AzureStorage
 
             blob.Metadata.Add(FootageDateMetaData, fileInfo.CreationTime.ToUniversalTime().ToString(FootageDateFormat, CultureInfo.InvariantCulture));
             await blob.SetMetadataAsync();
+        }
+
+        /// <summary>
+        /// Gets the type of the container.
+        /// </summary>
+        /// <param name="fileInfo">The file information.</param>
+        /// <returns>
+        /// Th name of the container for this type
+        /// </returns>
+        private string GetContainerType(FileInfo fileInfo)
+        {
+            switch (fileInfo.Extension.Trim('.').ToLowerInvariant())
+            {
+                case "jpg":
+                case "jpeg":
+                case "png":
+                    return ContainerSnap;
+
+                case "mkv":
+                case "mp4":
+                case "avi":
+                case "mov":
+                case "wmv":
+                    return ContainerRecording;
+
+                case "log":
+                    return ContainerEvent;
+            }
+
+            return ContainerOthers;
         }
     }
 }

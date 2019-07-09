@@ -11,6 +11,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Configuration
     using System.Runtime.Serialization;
 
     using Funcky.Security.CameraCloudCenter.Core.Providers;
+    using Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage;
     using Funcky.Security.CameraCloudCenter.Providers.AzureStorage;
 
     using Newtonsoft.Json.Linq;
