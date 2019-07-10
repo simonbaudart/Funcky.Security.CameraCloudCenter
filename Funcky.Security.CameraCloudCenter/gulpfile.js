@@ -7,25 +7,12 @@ var gulp = require("gulp"),
     cssmin = require("gulp-cssnano"),
     prefix = require("gulp-autoprefixer"),
     sourcemaps = require("gulp-sourcemaps"),
-    gulpWebpack = require("webpack-stream");
+    gulpWebpack = require("webpack-stream"),
+    watch = require("gulp-watch");
 
 var sassOptions = {
     outputStyle: "expanded"
 };
-
-gulp.task("sass:mdb",
-    function()
-    {
-        return gulp.src("./node_modules/mdbootstrap/scss/mdb.scss")
-            .pipe(sourcemaps.init())
-            .pipe(sass(sassOptions))
-            .pipe(prefix())
-            .pipe(sourcemaps.write())
-            .pipe(gulp.dest("./wwwroot/styles/"))
-            .pipe(cssmin())
-            .pipe(rename({ suffix: ".min" }))
-            .pipe(gulp.dest("./wwwroot/styles/"));
-    });
 
 gulp.task("react:dev",
     function()
@@ -47,4 +34,10 @@ gulp.task("react:prod",
         return gulp.src('./src/**/*.ts')
             .pipe(gulpWebpack(config, require('webpack')))
             .pipe(gulp.dest('./wwwroot/dist/'));
+    });
+
+gulp.task("react:watch",
+    function()
+    {
+        gulp.watch('./src/**/*.*', gulp.parallel("react:dev"));
     });

@@ -23,14 +23,13 @@
     "@types/react": "16.8.16",
     "@types/react-dom": "16.8.4",
 
-    "mdbootstrap": "4.8.5",
-
     "gulp": "4.0.2",
     "gulp-sass": "4.0.2",
     "gulp-autoprefixer": "6.1.0",
     "gulp-cssnano": "2.1.3",
     "gulp-rename": "1.4.0",
     "gulp-sourcemaps": "2.6.5",
+    "gulp-watch": "5.0.1",
 
     "formik": "1.5.4",
     "react": "16.8.6",

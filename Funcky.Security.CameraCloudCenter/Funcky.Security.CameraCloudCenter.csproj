@@ -6,6 +6,11 @@
 
   <ItemGroup>
     <None Remove="src\Application.tsx" />
+    <None Remove="src\Components\Navigation\index.tsx" />
+    <None Remove="src\Components\Navigation\Menu.tsx" />
+    <None Remove="src\Components\Navigation\SideBar.tsx" />
+    <None Remove="src\Services\AjaxService.tsx" />
+    <None Remove="src\Services\index.tsx" />
   </ItemGroup>
 
   <ItemGroup>

@@ -61,7 +61,7 @@ namespace Funcky.Security.CameraCloudCenter
 
             app.UseMvc();
 
-            app.Run(async context => { await context.Response.WriteAsync("Hello World!"); });
+            app.UseStaticFiles();
         }
 
         /// <summary>
