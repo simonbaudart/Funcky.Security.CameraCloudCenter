@@ -59,6 +59,8 @@ namespace Funcky.Security.CameraCloudCenter
 
             this.StartHangfire(app);
 
+            app.UseMvc();
+
             app.Run(async context => { await context.Response.WriteAsync("Hello World!"); });
         }
 
@@ -69,6 +71,7 @@ namespace Funcky.Security.CameraCloudCenter
         /// <param name="services">The services.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
             this.ConfigureHangfire(services);
         }
 
@@ -98,9 +101,9 @@ namespace Funcky.Security.CameraCloudCenter
                 throw new ApplicationException($"The configuration file {configurationFilePath} does not exists");
             }
 
-            var configurations = JsonConvert.DeserializeObject<CameraConfiguration[]>(File.ReadAllText(configurationFilePath));
+            GlobalConfiguration.Instance.Configurations = JsonConvert.DeserializeObject<CameraConfiguration[]>(File.ReadAllText(configurationFilePath));
 
-            foreach (var configuration in configurations)
+            foreach (var configuration in GlobalConfiguration.Instance.Configurations)
             {
                 RecurringJob.AddOrUpdate<CameraInputProcessor>($"PROCESS INPUT : {configuration.Name}", x => x.Process(configuration), Cron.Minutely(), TimeZoneInfo.Utc);
                 RecurringJob.AddOrUpdate<CameraOutputCleanup>($"PROCESS CLEAN : {configuration.Name}", x => x.Process(configuration), Cron.Hourly(), TimeZoneInfo.Utc);

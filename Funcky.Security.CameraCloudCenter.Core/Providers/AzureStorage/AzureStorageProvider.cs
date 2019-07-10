@@ -12,6 +12,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
     using System.Linq;
     using System.Threading.Tasks;
 
+    using Funcky.Security.CameraCloudCenter.Core.Model;
     using Funcky.Security.CameraCloudCenter.Core.Processor;
     using Funcky.Security.CameraCloudCenter.Providers.AzureStorage;
 
@@ -73,9 +74,11 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         }
 
         /// <summary>
-        /// Cleanups this storage.
+        /// Cleanups the old footages.
         /// </summary>
-        /// <returns>The task to wait</returns>
+        /// <returns>
+        /// The task to wait for in async
+        /// </returns>
         public async Task Cleanup()
         {
             var storageAccount = CloudStorageAccount.Parse(this.azureStorageConfiguration.ConnectionString);
@@ -110,6 +113,40 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
                         else
                         {
                             await blob.DeleteAsync();
+                        }
+                    }
+                }
+            }
+            while (continuationToken != null);
+        }
+
+        /// <summary>
+        /// Fills the last footage.
+        /// </summary>
+        /// <param name="camera">The camera.</param>
+        /// <returns>The task to wait for in async</returns>
+        public async Task FillLastFootage(Camera camera)
+        {
+            var storageAccount = CloudStorageAccount.Parse(this.azureStorageConfiguration.ConnectionString);
+            var storageClient = storageAccount.CreateCloudBlobClient();
+            var container = storageClient.GetContainerReference(this.azureStorageConfiguration.Container);
+
+            BlobContinuationToken continuationToken = null;
+
+            do
+            {
+                var files = await container.ListBlobsSegmentedAsync(null, true, BlobListingDetails.Metadata, 1000, continuationToken, null, null);
+                continuationToken = files.ContinuationToken;
+
+                foreach (var file in files.Results)
+                {
+                    if (file is CloudBlockBlob blob)
+                    {
+                        var footageDate = DateTime.ParseExact(blob.Metadata[FootageDateMetaData], FootageDateFormat, CultureInfo.InvariantCulture);
+
+                        if (camera.LastFootageDate < footageDate)
+                        {
+                            camera.LastFootageDate = footageDate;
                         }
                     }
                 }

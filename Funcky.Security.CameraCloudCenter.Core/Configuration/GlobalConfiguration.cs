@@ -29,5 +29,13 @@ namespace Funcky.Security.CameraCloudCenter.Core.Configuration
         /// The ff probe path.
         /// </value>
         public string FFProbePath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configurations.
+        /// </summary>
+        /// <value>
+        /// The configurations.
+        /// </value>
+        public CameraConfiguration[] Configurations { get; set; }
     }
 }

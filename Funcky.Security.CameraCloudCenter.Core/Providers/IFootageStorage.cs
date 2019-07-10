@@ -10,6 +10,8 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers
     using System.Linq;
     using System.Threading.Tasks;
 
+    using Funcky.Security.CameraCloudCenter.Core.Model;
+
     /// <summary>
     /// Interface to manage footage storage
     /// </summary>
@@ -20,6 +22,13 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers
         /// </summary>
         /// <returns>The task to wait for in async</returns>
         Task Cleanup();
+
+        /// <summary>
+        /// Fills the last footage.
+        /// </summary>
+        /// <param name="camera">The camera.</param>
+        /// <returns>The task to wait for in async</returns>
+        Task FillLastFootage(Camera camera);
 
         /// <summary>
         /// Uploads the file to the storage.
