@@ -6,9 +6,8 @@ import React from "react";
 
 import { ContextConsumer } from "../Components/Shared";
 import { ContextAwareProps } from "./";
-import { ContextContent } from "../Models";
 
-export const withMyCphContext = <P extends ContextAwareProps>(Component: any) =>
+export const withContext = <P extends ContextAwareProps>(Component: any) =>
 {
     return (props: Pick<P, Exclude<keyof P, keyof ContextAwareProps>>) =>
         <ContextConsumer>

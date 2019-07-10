@@ -7,6 +7,7 @@
 namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -133,25 +134,40 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 
             BlobContinuationToken continuationToken = null;
 
-            do
+
+            for (var directoryDate = DateTime.Today; directoryDate > DateTime.Today.AddDays(-90); directoryDate = directoryDate.AddDays(-1))
             {
-                var files = await container.ListBlobsSegmentedAsync(null, true, BlobListingDetails.Metadata, 1000, continuationToken, null, null);
-                continuationToken = files.ContinuationToken;
-
-                foreach (var file in files.Results)
+                var directory = container.GetDirectoryReference(directoryDate.ToString("yyyy/yyyy-MM-dd", CultureInfo.InvariantCulture));
+                do
                 {
-                    if (file is CloudBlockBlob blob)
-                    {
-                        var footageDate = DateTime.ParseExact(blob.Metadata[FootageDateMetaData], FootageDateFormat, CultureInfo.InvariantCulture);
+                    var files = await directory.ListBlobsSegmentedAsync(true, BlobListingDetails.Metadata, 1000, continuationToken, null, null);
+                    continuationToken = files.ContinuationToken;
 
-                        if (camera.LastFootageDate < footageDate)
+                    foreach (var file in files.Results)
+                    {
+                        if (file is CloudBlockBlob blob)
                         {
-                            camera.LastFootageDate = footageDate;
+                            if (!blob.Metadata.ContainsKey(FootageDateMetaData))
+                            {
+                                continue;
+                            }
+
+                            var footageDate = DateTime.ParseExact(blob.Metadata[FootageDateMetaData], FootageDateFormat, CultureInfo.InvariantCulture);
+
+                            if (camera.LastFootageDate < footageDate)
+                            {
+                                camera.LastFootageDate = footageDate;
+                            }
                         }
                     }
                 }
+                while (continuationToken != null);
+
+                if (camera.LastFootageDate != default(DateTime))
+                {
+                    break;
+                }
             }
-            while (continuationToken != null);
         }
 
         /// <summary>

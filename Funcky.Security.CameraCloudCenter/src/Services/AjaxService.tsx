@@ -46,10 +46,6 @@ export const AjaxService = {
                     {
                         resolve(true);
                     }
-                    else if (response.status === 500)
-                    {
-                        window.location.href = '/E_500.html';
-                    }
                     else
                     {
                         reject(false);
@@ -73,10 +69,6 @@ export const AjaxService = {
                     if (response.ok)
                     {
                         resolve(response.json());
-                    }
-                    else if (response.status === 500)
-                    {
-                        window.location.href = '/E_500.html';
                     }
                     else
                     {
