@@ -134,7 +134,6 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 
             BlobContinuationToken continuationToken = null;
 
-
             for (var directoryDate = DateTime.Today; directoryDate > DateTime.Today.AddDays(-90); directoryDate = directoryDate.AddDays(-1))
             {
                 var directory = container.GetDirectoryReference(directoryDate.ToString("yyyy/yyyy-MM-dd", CultureInfo.InvariantCulture));
