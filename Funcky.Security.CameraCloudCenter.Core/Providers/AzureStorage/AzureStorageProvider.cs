@@ -99,6 +99,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
             var footageIndex = await this.footageIndexProvider.GetFootageIndex();
             camera.LastFootageDate = footageIndex.LastFootageDate;
             camera.LastFootageImage = footageIndex.LastFootageImage;
+            camera.LastFootageImageUrl = this.GetTemporaryAccess(footageIndex.LastFootageImage);
         }
 
         /// <summary>
@@ -175,6 +176,29 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
             }
 
             return AzureConstants.ContainerOthers;
+        }
+
+        /// <summary>
+        /// Gets the temporary access.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>The uri for a temporary access</returns>
+        private string GetTemporaryAccess(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return AzureConstants.EmptyFootageUrl;
+            }
+
+            var storageAccount = CloudStorageAccount.Parse(this.azureStorageConfiguration.ConnectionString);
+            var storageClient = storageAccount.CreateCloudBlobClient();
+            var container = storageClient.GetContainerReference(this.azureStorageConfiguration.Container);
+            var blob = container.GetBlobReference(path);
+
+            var builder = new UriBuilder(blob.Uri);
+            builder.Query = blob.GetSharedAccessSignature(new SharedAccessBlobPolicy { Permissions = SharedAccessBlobPermissions.Read, SharedAccessStartTime = new DateTimeOffset(DateTime.UtcNow.AddMinutes(-2)), SharedAccessExpiryTime = new DateTimeOffset(DateTime.UtcNow.AddMinutes(5)) }).TrimStart('?');
+
+            return builder.Uri.ToString();
         }
 
         /// <summary>

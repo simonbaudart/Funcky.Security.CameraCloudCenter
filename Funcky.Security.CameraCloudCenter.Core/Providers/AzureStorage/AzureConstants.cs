@@ -35,6 +35,11 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         internal const string ContainerSnap = "snap";
 
         /// <summary>
+        /// The empty footage URL
+        /// </summary>
+        internal const string EmptyFootageUrl = "https://via.placeholder.com/1920x1080.png&text=No%20footage";
+
+        /// <summary>
         /// The footage date format
         /// </summary>
         internal const string FootageDateFormat = "yyyy-MM-dd HH:mm:ss";

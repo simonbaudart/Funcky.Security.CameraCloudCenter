@@ -7,11 +7,11 @@ interface SideBarProps {
 }
 
 export const SideBar = (props: SideBarProps) => {
-    return <div>
+    return <>
         {
             props.cameras.map((camera, i) => {
-                return (<CameraSummary key={i} camera={camera} />);
+                return (<div className="col-12 col-md-6 col-xl-3"><CameraSummary key={i} camera={camera} /></div>);
             })
         }
-    </div>;
+        </>;
 };

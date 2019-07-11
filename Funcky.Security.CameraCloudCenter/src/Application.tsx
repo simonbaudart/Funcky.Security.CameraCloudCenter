@@ -54,9 +54,7 @@ export class Application extends React.Component<any, ApplicationState>
                 </div>
 
                 <div className="row pb-3">
-                    <div className="col-2">
-                        <SideBar cameras={this.state.cameras} />
-                    </div>
+                    <SideBar cameras={this.state.cameras} />
                 </div>
                 
             </div>
