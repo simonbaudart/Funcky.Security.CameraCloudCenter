@@ -65,26 +65,24 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 
                 foreach (var file in files.Results)
                 {
-                    if (file is CloudBlockBlob blob)
+                    if (!(file is CloudBlockBlob blob))
                     {
-                        if (blob.Metadata.TryGetValue(AzureConstants.FootageDateMetaData, out var footageDateValue))
-                        {
-                            if (DateTime.TryParseExact(footageDateValue, AzureConstants.FootageDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var footageDate))
-                            {
-                                if (footageDate < DateTime.UtcNow.AddDays(-this.azureStorageConfiguration.Retention))
-                                {
-                                    await blob.DeleteAsync();
-                                }
-                            }
-                            else
-                            {
-                                await blob.DeleteAsync();
-                            }
-                        }
-                        else
-                        {
-                            await blob.DeleteAsync();
-                        }
+                        continue;
+                    }
+
+                    if (!blob.Metadata.TryGetValue(AzureConstants.FootageDateMetaData, out var footageDateValue))
+                    {
+                        continue;
+                    }
+
+                    if (!DateTime.TryParseExact(footageDateValue, AzureConstants.FootageDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var footageDate))
+                    {
+                        continue;
+                    }
+
+                    if (footageDate < DateTime.UtcNow.AddDays(-this.azureStorageConfiguration.Retention))
+                    {
+                        await blob.DeleteAsync();
                     }
                 }
             }
