@@ -42,10 +42,18 @@ namespace Funcky.Security.CameraCloudCenter.Core.Processor
         /// <returns>The duration of the video file</returns>
         public TimeSpan GetDuration()
         {
-            var ffProbe = new FFProbe();
-            ffProbe.FFProbeExeName = GlobalConfiguration.Instance.FFProbePath;
-            var videoInfo = ffProbe.GetMediaInfo(this.File.FullName);
-            return videoInfo.Duration;
+            try
+            {
+                var ffProbe = new FFProbe();
+                ffProbe.FFProbeExeName = GlobalConfiguration.Instance.FFProbePath;
+                var videoInfo = ffProbe.GetMediaInfo(this.File.FullName);
+                return videoInfo.Duration;
+            }
+            catch (AggregateException)
+            {
+                // This can be caused by an empty file
+                return TimeSpan.Zero;
+            }
         }
     }
 }
