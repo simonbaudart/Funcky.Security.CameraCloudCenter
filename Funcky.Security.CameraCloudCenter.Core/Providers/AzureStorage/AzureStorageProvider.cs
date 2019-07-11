@@ -7,7 +7,6 @@
 namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -26,44 +25,14 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
     public class AzureStorageProvider : IFootageStorage
     {
         /// <summary>
-        /// The container event
-        /// </summary>
-        private const string ContainerEvent = "event";
-
-        /// <summary>
-        /// The container others
-        /// </summary>
-        private const string ContainerOthers = "others";
-
-        /// <summary>
-        /// The container recording
-        /// </summary>
-        private const string ContainerRecording = "recording";
-
-        /// <summary>
-        /// The container snap
-        /// </summary>
-        private const string ContainerSnap = "snap";
-
-        /// <summary>
-        /// The footage date format
-        /// </summary>
-        private const string FootageDateFormat = "yyyy-MM-dd HH:mm:ss";
-
-        /// <summary>
-        /// The footage date meta data
-        /// </summary>
-        private const string FootageDateMetaData = "FootageDate";
-
-        /// <summary>
-        /// The footage duration meta data
-        /// </summary>
-        private const string FootageDurationMetaData = "FootageDuration";
-
-        /// <summary>
-        /// The azure output configuration
+        /// The azure storage configuration
         /// </summary>
         private readonly AzureStorageConfiguration azureStorageConfiguration;
+
+        /// <summary>
+        /// The footage index provider
+        /// </summary>
+        private readonly FootageIndexProvider footageIndexProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureStorageProvider" /> class.
@@ -72,6 +41,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         public AzureStorageProvider(AzureStorageConfiguration azureStorageConfiguration)
         {
             this.azureStorageConfiguration = azureStorageConfiguration;
+            this.footageIndexProvider = new FootageIndexProvider(azureStorageConfiguration);
         }
 
         /// <summary>
@@ -97,9 +67,9 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
                 {
                     if (file is CloudBlockBlob blob)
                     {
-                        if (blob.Metadata.TryGetValue(FootageDateMetaData, out var footageDateValue))
+                        if (blob.Metadata.TryGetValue(AzureConstants.FootageDateMetaData, out var footageDateValue))
                         {
-                            if (DateTime.TryParseExact(footageDateValue, FootageDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var footageDate))
+                            if (DateTime.TryParseExact(footageDateValue, AzureConstants.FootageDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var footageDate))
                             {
                                 if (footageDate < DateTime.UtcNow.AddDays(-this.azureStorageConfiguration.Retention))
                                 {
@@ -128,45 +98,9 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         /// <returns>The task to wait for in async</returns>
         public async Task FillLastFootage(Camera camera)
         {
-            var storageAccount = CloudStorageAccount.Parse(this.azureStorageConfiguration.ConnectionString);
-            var storageClient = storageAccount.CreateCloudBlobClient();
-            var container = storageClient.GetContainerReference(this.azureStorageConfiguration.Container);
-
-            BlobContinuationToken continuationToken = null;
-
-            for (var directoryDate = DateTime.Today; directoryDate > DateTime.Today.AddDays(-90); directoryDate = directoryDate.AddDays(-1))
-            {
-                var directory = container.GetDirectoryReference(directoryDate.ToString("yyyy/yyyy-MM-dd", CultureInfo.InvariantCulture));
-                do
-                {
-                    var files = await directory.ListBlobsSegmentedAsync(true, BlobListingDetails.Metadata, 1000, continuationToken, null, null);
-                    continuationToken = files.ContinuationToken;
-
-                    foreach (var file in files.Results)
-                    {
-                        if (file is CloudBlockBlob blob)
-                        {
-                            if (!blob.Metadata.ContainsKey(FootageDateMetaData))
-                            {
-                                continue;
-                            }
-
-                            var footageDate = DateTime.ParseExact(blob.Metadata[FootageDateMetaData], FootageDateFormat, CultureInfo.InvariantCulture);
-
-                            if (camera.LastFootageDate < footageDate)
-                            {
-                                camera.LastFootageDate = footageDate;
-                            }
-                        }
-                    }
-                }
-                while (continuationToken != null);
-
-                if (camera.LastFootageDate != default(DateTime))
-                {
-                    break;
-                }
-            }
+            var footageIndex = await this.footageIndexProvider.GetFootageIndex();
+            camera.LastFootageDate = footageIndex.LastFootageDate;
+            camera.LastFootageImage = footageIndex.LastFootageImage;
         }
 
         /// <summary>
@@ -191,7 +125,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 
             var containerType = this.GetContainerType(fileInfo);
 
-            var path = $"{fileInfo.CreationTime:yyyy}/{fileInfo.CreationTime:yyyy-MM-dd}/{containerType}/";
+            var path = $"{fileInfo.CreationTimeUtc:yyyy}/{fileInfo.CreationTimeUtc:yyyy-MM-dd}/{containerType}/";
             var blobDirectory = container.GetDirectoryReference(path);
 
             var blob = blobDirectory.GetBlockBlobReference(fileInfo.Name);
@@ -199,6 +133,15 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
             await blob.UploadFromFileAsync(fileInfo.FullName);
 
             await this.SetMetadata(blob, containerType, fileInfo);
+
+            var footageIndex = await this.footageIndexProvider.GetFootageIndex();
+
+            if (fileInfo.CreationTimeUtc > footageIndex.LastFootageDate)
+            {
+                footageIndex.LastFootageDate = fileInfo.CreationTimeUtc;
+                footageIndex.LastFootageImage = blob.Name;
+                await this.footageIndexProvider.SetFootageIndex(footageIndex);
+            }
         }
 
         /// <summary>
@@ -215,20 +158,20 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
                 case "jpg":
                 case "jpeg":
                 case "png":
-                    return ContainerSnap;
+                    return AzureConstants.ContainerSnap;
 
                 case "mkv":
                 case "mp4":
                 case "avi":
                 case "mov":
                 case "wmv":
-                    return ContainerRecording;
+                    return AzureConstants.ContainerRecording;
 
                 case "log":
-                    return ContainerEvent;
+                    return AzureConstants.ContainerEvent;
             }
 
-            return ContainerOthers;
+            return AzureConstants.ContainerOthers;
         }
 
         /// <summary>
@@ -240,17 +183,17 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         /// <returns>The task to wait for in async</returns>
         private async Task SetMetadata(CloudBlockBlob blob, string containerType, FileInfo fileInfo)
         {
-            blob.Metadata.Add(FootageDateMetaData, fileInfo.CreationTime.ToUniversalTime().ToString(FootageDateFormat, CultureInfo.InvariantCulture));
+            blob.Metadata.Add(AzureConstants.FootageDateMetaData, fileInfo.CreationTimeUtc.ToString(AzureConstants.FootageDateFormat, CultureInfo.InvariantCulture));
 
             switch (containerType)
             {
-                case ContainerRecording:
+                case AzureConstants.ContainerRecording:
                     var videoInfo = new VideoInfo(fileInfo);
-                    blob.Metadata.Add(FootageDurationMetaData, videoInfo.GetDuration().TotalSeconds.ToString(CultureInfo.InvariantCulture));
+                    blob.Metadata.Add(AzureConstants.FootageDurationMetaData, videoInfo.GetDuration().TotalSeconds.ToString(CultureInfo.InvariantCulture));
                     break;
 
                 default:
-                    blob.Metadata.Add(FootageDurationMetaData, "1");
+                    blob.Metadata.Add(AzureConstants.FootageDurationMetaData, "0");
                     break;
             }
 
