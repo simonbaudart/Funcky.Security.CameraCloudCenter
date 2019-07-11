@@ -47,8 +47,18 @@ export class Application extends React.Component<any, ApplicationState>
     public render(): Object | string | number | {} | Object | Object | boolean | null | undefined {
         return <ContextProvider value={this.state.context}>
             <div className="container-fluid">
-                <Menu />
-                <SideBar />
+                <div className="row pb-3">
+                    <div className="col">
+                        <Menu />
+                    </div>
+                </div>
+
+                <div className="row pb-3">
+                    <div className="col-2">
+                        <SideBar cameras={this.state.cameras} />
+                    </div>
+                </div>
+                
             </div>
         </ContextProvider>;
     }
