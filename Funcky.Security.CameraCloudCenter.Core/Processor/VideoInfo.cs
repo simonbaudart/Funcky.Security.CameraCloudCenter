@@ -49,9 +49,10 @@ namespace Funcky.Security.CameraCloudCenter.Core.Processor
                 var videoInfo = ffProbe.GetMediaInfo(this.File.FullName);
                 return videoInfo.Duration;
             }
-            catch (AggregateException)
+            catch (Exception)
             {
                 // This can be caused by an empty file
+                // Get media info returns a generic exception :'(
                 return TimeSpan.Zero;
             }
         }
