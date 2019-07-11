@@ -35,6 +35,15 @@ namespace Funcky.Security.CameraCloudCenter.Core.Model
         public string LastFootageImage { get; set; }
 
         /// <summary>
+        /// Gets or sets the last footage image URL.
+        /// </summary>
+        /// <value>
+        /// The last footage image URL.
+        /// </value>
+        [DataMember(Name = "lastFootageImageUrl")]
+        public string LastFootageImageUrl { get; set; }
+
+        /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>
