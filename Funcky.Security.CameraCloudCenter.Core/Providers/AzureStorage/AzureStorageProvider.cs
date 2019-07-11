@@ -139,7 +139,12 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
             if (fileInfo.CreationTimeUtc > footageIndex.LastFootageDate)
             {
                 footageIndex.LastFootageDate = fileInfo.CreationTimeUtc;
-                footageIndex.LastFootageImage = blob.Name;
+
+                if (containerType == AzureConstants.ContainerSnap)
+                {
+                    footageIndex.LastFootageImage = blob.Name;
+                }
+
                 await this.footageIndexProvider.SetFootageIndex(footageIndex);
             }
         }
