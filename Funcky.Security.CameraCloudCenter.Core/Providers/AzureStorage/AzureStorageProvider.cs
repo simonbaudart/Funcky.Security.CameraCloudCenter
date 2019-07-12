@@ -133,19 +133,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 
             await this.SetMetadata(blob, containerType, fileInfo);
 
-            var footageIndex = await this.footageIndexProvider.GetFootageIndex();
-
-            if (fileInfo.CreationTimeUtc > footageIndex.LastFootageDate)
-            {
-                footageIndex.LastFootageDate = fileInfo.CreationTimeUtc;
-
-                if (containerType == AzureConstants.ContainerSnap)
-                {
-                    footageIndex.LastFootageImage = blob.Name;
-                }
-
-                await this.footageIndexProvider.SetFootageIndex(footageIndex);
-            }
+            await this.UpdateFootageIndex(fileInfo, containerType, blob.Name);
         }
 
         /// <summary>
@@ -225,6 +213,33 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
             }
 
             await blob.SetMetadataAsync();
+        }
+
+        /// <summary>
+        /// Updates the index of the footage.
+        /// </summary>
+        /// <param name="fileInfo">The file information.</param>
+        /// <param name="containerType">Type of the container.</param>
+        /// <param name="blobName">Name of the BLOB.</param>
+        /// <returns>The task to wait for in async</returns>
+        private async Task UpdateFootageIndex(FileInfo fileInfo, string containerType, string blobName)
+        {
+            var footageIndex = await this.footageIndexProvider.GetFootageIndex();
+
+            if (fileInfo.CreationTimeUtc > footageIndex.LastFootageDate)
+            {
+                footageIndex.LastFootageDate = fileInfo.CreationTimeUtc;
+
+                // If the container is snap, keep the name of the last image to display on the dashboard
+                // Use a minimum snap interval to avoid "empty" images
+                if (containerType == AzureConstants.ContainerSnap && footageIndex.LastFootageImageDate.Add(AzureConstants.MinimumSnapInterval) < fileInfo.CreationTimeUtc)
+                {
+                    footageIndex.LastFootageImage = blobName;
+                    footageIndex.LastFootageImageDate = fileInfo.CreationTimeUtc;
+                }
+
+                await this.footageIndexProvider.SetFootageIndex(footageIndex);
+            }
         }
     }
 }

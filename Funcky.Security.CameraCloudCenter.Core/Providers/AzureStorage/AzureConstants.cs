@@ -8,6 +8,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 {
     using System;
     using System.Linq;
+    using System.Reflection;
 
     /// <summary>
     /// All the constants for Azure
@@ -53,5 +54,10 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         /// The footage duration meta data
         /// </summary>
         internal const string FootageDurationMetaData = "FootageDuration";
+
+        /// <summary>
+        /// The minimum snap interval
+        /// </summary>
+        internal static TimeSpan MinimumSnapInterval => TimeSpan.FromSeconds(15);
     }
 }

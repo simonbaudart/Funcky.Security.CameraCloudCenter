@@ -37,5 +37,14 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         /// </value>
         [DataMember(Name = "lastFootageImage")]
         public string LastFootageImage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last footage image date.
+        /// </summary>
+        /// <value>
+        /// The last footage image date.
+        /// </value>
+        [DataMember(Name = "LastFootageImageDate")]
+        public DateTime LastFootageImageDate { get; set; }
     }
 }
