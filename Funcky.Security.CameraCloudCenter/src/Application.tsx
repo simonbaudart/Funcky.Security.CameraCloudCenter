@@ -1,9 +1,10 @@
 ﻿import React from "react";
+import { ContextContent} from "./Models/ContextContent";
+import { Camera } from "./Models/Camera";
+import { AjaxService } from "./Services/AjaxService";
+import { ContextProvider } from "./Components/Shared/Context";
 
-import { Menu, SideBar } from "./Components/Navigation";
-import { Camera, ContextContent } from "./Models";
-import { ContextProvider } from "./Components/Shared";
-import { AjaxService } from "./Services";
+import { CameraList } from "./Components/Camera/CameraList";
 
 interface ApplicationState {
     context: ContextContent;
@@ -49,12 +50,12 @@ export class Application extends React.Component<any, ApplicationState>
             <div className="container-fluid">
                 <div className="row pb-3">
                     <div className="col">
-                        <Menu />
+                        <menu />
                     </div>
                 </div>
 
                 <div className="row pb-3">
-                    <SideBar cameras={this.state.cameras} />
+                    <CameraList cameras={this.state.cameras} />
                 </div>
                 
             </div>

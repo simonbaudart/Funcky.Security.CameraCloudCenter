@@ -2,11 +2,11 @@
 import { Camera } from "../../Models/Camera";
 import { CameraSummary } from "../Camera/CameraSummary";
 
-interface SideBarProps {
+interface CameraListProps {
     cameras: Camera[];
 }
 
-export const SideBar = (props: SideBarProps) => {
+export const CameraList = (props: CameraListProps) => {
     return <>
         {
             props.cameras.map((camera, i) => {
