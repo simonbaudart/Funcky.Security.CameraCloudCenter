@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <None Remove="src\Application.tsx" />
+    <None Remove="src\Components\Camera\CameraDetail.tsx" />
     <None Remove="src\Components\Camera\CameraSummary.tsx" />
     <None Remove="src\Components\index.tsx" />
     <None Remove="src\Components\Navigation\Menu.tsx" />
@@ -24,6 +25,7 @@
     <None Remove="src\Models\index - Copy.tsx" />
     <None Remove="src\Models\index.tsx" />
     <None Remove="src\Services\AjaxService.tsx" />
+    <None Remove="src\Services\index.tsx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +49,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Update="src\Models\index.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Update="src\Services\index.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>
   </ItemGroup>

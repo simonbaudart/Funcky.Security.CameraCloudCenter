@@ -1,10 +1,8 @@
 ﻿import React from "react";
-import { ContextContent} from "./Models/ContextContent";
-import { Camera } from "./Models/Camera";
-import { AjaxService } from "./Services/AjaxService";
-import { ContextProvider, Menu } from "./Components";
 
-import { CameraList } from "./Components/Camera/CameraList";
+import { Camera, ContextContent} from "./Models";
+import { AjaxService } from "./Services";
+import { CameraDetail, CameraList, ContextProvider, Menu } from "./Components";
 
 interface ApplicationState {
     context: ContextContent;
@@ -46,7 +44,17 @@ export class Application extends React.Component<any, ApplicationState>
         this.updateContext(context);
     };
 
-    public render(): Object | string | number | {} | Object | Object | boolean | null | undefined {
+    private displayCameraDetail()
+    {
+        if (this.state.context.currentCamera)
+        {
+            return <CameraDetail camera={this.state.context.currentCamera}/>;
+        }
+        return <div></div>;
+    }
+
+    public render()
+    {
         return <ContextProvider value={this.state.context}>
             <div className="container-fluid">
                 <div className="row pb-3">
@@ -55,15 +63,9 @@ export class Application extends React.Component<any, ApplicationState>
                     </div>
                 </div>
 
-                <div className="row pb-3">
-                    <CameraList cameras={this.state.cameras} />
-                </div>
+                <CameraList cameras={this.state.cameras} />
                 
-                <div className="row pb-3">
-                    <div className="col">
-                        <h2>{this.state.context.currentCamera != null ? this.state.context.currentCamera.name : ''}</h2>
-                    </div>
-                </div>
+                {this.displayCameraDetail()}
             </div>
         </ContextProvider>;
     }

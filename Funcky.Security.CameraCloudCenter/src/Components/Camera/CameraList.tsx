@@ -7,7 +7,7 @@ interface CameraListProps {
 }
 
 export const CameraList = (props: CameraListProps) => {
-    return <>
+    return <div className="row pb-3">
         {
             props.cameras.map((camera) => {
                 return (<div key={camera.key} className="col-12 col-md-6 col-xl-3">
@@ -15,5 +15,5 @@ export const CameraList = (props: CameraListProps) => {
                 </div>);
             })
         }
-    </>;
+    </div>;
 };
