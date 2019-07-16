@@ -1,4 +1,4 @@
-﻿import { ContextContent } from "../Models/ContextContent";
+﻿import { ContextContent } from "../Models";
 
 export interface ContextAwareProps
 {

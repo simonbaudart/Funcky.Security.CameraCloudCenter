@@ -1,7 +1,6 @@
 ﻿import React from "react";
-import { Camera } from "../../Models/Camera";
-import { ContextAwareProps } from "../../Hoc/ContextAwareProps";
-import { withContext } from "../../Hoc/WithContext";
+import { Camera } from "../../Models";
+import { ContextAwareProps, withContext } from "../../Hoc";
 
 interface CameraSummaryProps extends ContextAwareProps {
     camera: Camera;
