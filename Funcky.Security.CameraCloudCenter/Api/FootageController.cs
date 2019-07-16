@@ -25,12 +25,20 @@ namespace Funcky.Security.CameraCloudCenter.Api
         /// Gets the footages.
         /// </summary>
         /// <param name="cameraName">Name of the camera.</param>
-        /// <returns>List of all days with footage for a camera</returns>
+        /// <param name="date">The date.</param>
+        /// <returns>
+        /// List of all days with footage for a camera
+        /// </returns>
         [Route("api/footages/{cameraName}")]
         [HttpGet]
-        public List<FootageDay> GetFootages(string cameraName)
+        public List<FootageDay> GetFootages(string cameraName, [FromQuery]string date)
         {
-            return new List<FootageDay>();
+            var sample = new FootageDay { FootageDate = DateTime.UtcNow, Title = $"Footage from {cameraName}" };
+
+            var list = new List<FootageDay>();
+            list.Add(sample);
+
+            return list;
         }
     }
 }
