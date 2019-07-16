@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -8,13 +8,20 @@
     <FileVersion>1.2.4.0</FileVersion>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- Makes the TypeScript compilation task a no-op -->
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="src\Application.tsx" />
     <None Remove="src\Components\Camera\CameraSummary.tsx" />
+    <None Remove="src\Components\index.tsx" />
     <None Remove="src\Components\Navigation\Menu.tsx" />
     <None Remove="src\Components\Navigation\SideBar.tsx" />
     <None Remove="src\Components\Shared\Context.tsx" />
     <None Remove="src\Models\Camera.tsx" />
+    <None Remove="src\Models\index.tsx" />
     <None Remove="src\Services\AjaxService.tsx" />
   </ItemGroup>
 
@@ -32,6 +39,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Funcky.Security.CameraCloudCenter.Core\Funcky.Security.CameraCloudCenter.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Update="src\Models\index.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
   </ItemGroup>
 
 </Project>

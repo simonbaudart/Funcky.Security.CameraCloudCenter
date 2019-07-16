@@ -2,7 +2,7 @@
 import { ContextContent} from "./Models/ContextContent";
 import { Camera } from "./Models/Camera";
 import { AjaxService } from "./Services/AjaxService";
-import { ContextProvider } from "./Components/Shared/Context";
+import { ContextProvider, Menu } from "./Components";
 
 import { CameraList } from "./Components/Camera/CameraList";
 
@@ -21,6 +21,7 @@ export class Application extends React.Component<any, ApplicationState>
                 route: document.location.hash.replace("#", "") || "/",
                 setRoute: this.setRoute.bind(this),
                 updateContext: this.updateContext.bind(this),
+                currentCamera: undefined
             },
             cameras: []
         };
@@ -50,7 +51,7 @@ export class Application extends React.Component<any, ApplicationState>
             <div className="container-fluid">
                 <div className="row pb-3">
                     <div className="col">
-                        <menu />
+                        <Menu />
                     </div>
                 </div>
 
@@ -58,6 +59,11 @@ export class Application extends React.Component<any, ApplicationState>
                     <CameraList cameras={this.state.cameras} />
                 </div>
                 
+                <div className="row pb-3">
+                    <div className="col">
+                        <h2>{this.state.context.currentCamera != null ? this.state.context.currentCamera.name : ''}</h2>
+                    </div>
+                </div>
             </div>
         </ContextProvider>;
     }
