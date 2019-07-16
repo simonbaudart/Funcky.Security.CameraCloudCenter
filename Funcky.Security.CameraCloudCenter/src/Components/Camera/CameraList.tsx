@@ -7,11 +7,11 @@ interface CameraListProps {
 }
 
 export const CameraList = (props: CameraListProps) => {
-    return <>
+    return <div>
         {
             props.cameras.map((camera, i) => {
                 return (<div className="col-12 col-md-6 col-xl-3"><CameraSummary key={i} camera={camera} /></div>);
             })
         }
-        </>;
+        </div>;
 };
