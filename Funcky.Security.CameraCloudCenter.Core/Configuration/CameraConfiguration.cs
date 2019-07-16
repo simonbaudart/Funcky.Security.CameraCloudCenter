@@ -23,6 +23,15 @@ namespace Funcky.Security.CameraCloudCenter.Core.Configuration
     public class CameraConfiguration
     {
         /// <summary>
+        /// Gets or sets the key.
+        /// </summary>
+        /// <value>
+        /// The key.
+        /// </value>
+        [DataMember(Name = "key")]
+        public string Key { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the camera.
         /// </summary>
         /// <value>
