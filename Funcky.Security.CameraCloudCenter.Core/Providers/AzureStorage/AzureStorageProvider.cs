@@ -195,14 +195,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 
             foreach (var footage in footages)
             {
-                if (lastFootage == null)
-                {
-                    lastFootage = this.Clone(footage);
-                    lastFootageCount = 1;
-
-                    combined.Add(lastFootage);
-                }
-                else if (lastFootage.FootageDate.Add(interval) < footage.FootageDate)
+                if (lastFootage == null || lastFootage.FootageDate.Add(interval) < footage.FootageDate)
                 {
                     lastFootage = this.Clone(footage);
                     lastFootageCount = 1;
@@ -212,10 +205,10 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
                 else
                 {
                     lastFootageCount++;
-                    lastFootage.Sequences.Add(footage);
                     lastFootage.FootageEndDate = footage.FootageEndDate;
                 }
 
+                lastFootage.Sequences.Add(footage);
                 lastFootage.Title = $"{footageName} : {lastFootageCount} footage{(lastFootageCount > 1 ? "s" : string.Empty)} from {lastFootage.FootageDate.ToString("HH:mm:ss", CultureInfo.InvariantCulture)} to {lastFootage.FootageEndDate.ToString("HH:mm:ss", CultureInfo.InvariantCulture)}";
             }
 

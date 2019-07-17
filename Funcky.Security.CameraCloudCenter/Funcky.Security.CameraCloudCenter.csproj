@@ -22,6 +22,7 @@
     <None Remove="src\Components\Navigation\SideBar.tsx" />
     <None Remove="src\Components\Shared\Context.tsx" />
     <None Remove="src\Models\Camera.tsx" />
+    <None Remove="src\Models\Footage.tsx" />
     <None Remove="src\Models\index - Copy.tsx" />
     <None Remove="src\Models\index.tsx" />
     <None Remove="src\Services\AjaxService.tsx" />

@@ -4,7 +4,7 @@ import moment from "moment";
 import FullCalendar from '@fullcalendar/react';
 import listPlugin from '@fullcalendar/list';
 
-import { Camera } from "../../Models";
+import { Camera, Footage } from "../../Models";
 import { AjaxService } from "../../Services";
 
 interface CameraDetailProps
@@ -14,28 +14,32 @@ interface CameraDetailProps
 
 interface CameraDetailState
 {
-    event: any;
+    selectedFootage: Footage | undefined;
 }
 
 export class CameraDetail extends React.Component<CameraDetailProps, CameraDetailState> {
 
     private displayedDate: string;
     private displayedCamera: string;
+    private footages: Footage[];
 
     constructor(props: CameraDetailProps)
     {
         super(props);
 
         this.state = {
-            event: undefined
+            selectedFootage: undefined
         };
     }
 
     selectFootage(eventClickInfo: any)
     {
-        console.log(eventClickInfo);
+        var footage: Footage | undefined = this.footages.find((current: Footage) =>
+        {
+            return current.id === eventClickInfo.event.id;
+        });
 
-        this.setState({ event: eventClickInfo });
+        this.setState({ selectedFootage: footage });
     }
 
     getFootages(info, successCallback, failureCallback)
@@ -48,8 +52,9 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
             return;
         }
 
-        AjaxService.get<any[]>('api/footages/' + this.props.camera.key + '?date=' + date).then((footagesEvent) =>
+        AjaxService.get<any[]>('api/footages/' + this.props.camera.key + '?date=' + date).then((footagesEvent: Footage[]) =>
         {
+            this.footages = footagesEvent;
             this.displayedDate = date;
             this.displayedCamera = this.props.camera.key;
 
