@@ -10,12 +10,33 @@ namespace Funcky.Security.CameraCloudCenter.Core.Model
     using System.Linq;
     using System.Runtime.Serialization;
 
+    using Funcky.Security.CameraCloudCenter.Core.Configuration;
+
     /// <summary>
     /// Represent a camera
     /// </summary>
     [DataContract]
     public class Camera
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Camera" /> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        public Camera(CameraConfiguration configuration)
+        {
+            this.Name = configuration.Name;
+            this.Key = configuration.Key;
+        }
+
+        /// <summary>
+        /// Gets or sets the key.
+        /// </summary>
+        /// <value>
+        /// The key.
+        /// </value>
+        [DataMember(Name = "key")]
+        public string Key { get; set; }
+
         /// <summary>
         /// Gets or sets the last footage date.
         /// </summary>

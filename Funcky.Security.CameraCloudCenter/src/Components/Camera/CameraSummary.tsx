@@ -1,10 +1,19 @@
 ﻿import React from "react";
-import { Camera } from "../../Models/Camera";
+import { Camera } from "../../Models";
+import { ContextAwareProps, withContext } from "../../Hoc";
 
-interface CameraSummaryProps {
+interface CameraSummaryProps extends ContextAwareProps {
     camera: Camera;
 }
-export const CameraSummary = (props: CameraSummaryProps) => {
+const CameraSummaryComponent = (props: CameraSummaryProps) => {
+
+    const selectCamera = () =>
+    {
+        var ctx = props.context;
+        ctx.currentCamera = props.camera;
+        props.context.updateContext(ctx);
+    }
+
     return <div className="card mb-3">
         <div className="card-body w-100">
             <img className="card-img-top" src={props.camera.lastFootageImageUrl} alt={"Last footage " + props.camera.name} />
@@ -21,7 +30,9 @@ export const CameraSummary = (props: CameraSummaryProps) => {
                         second: '2-digit'
                     }).format(Date.parse(props.camera.lastFootageDate))}
             </p>
-            <a href="#" className="btn btn-primary w-100">Show details</a>
+            <a href="#" className="btn btn-primary w-100" onClick={() => selectCamera()}>Show details</a>
         </div>
     </div>;
 }
+
+export const CameraSummary = withContext<CameraSummaryProps>(CameraSummaryComponent);

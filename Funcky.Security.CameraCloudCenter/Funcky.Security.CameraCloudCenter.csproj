@@ -1,22 +1,33 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName />
-    <Version>1.2.4</Version>
-    <AssemblyVersion>1.2.4.0</AssemblyVersion>
-    <FileVersion>1.2.4.0</FileVersion>
+    <Version>1.4.0</Version>
+    <AssemblyVersion>1.4.0.0</AssemblyVersion>
+    <FileVersion>1.4.0.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Makes the TypeScript compilation task a no-op -->
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="src\Application.tsx" />
+    <None Remove="src\Components\Camera\CameraDetail.tsx" />
     <None Remove="src\Components\Camera\CameraSummary.tsx" />
-    <None Remove="src\Components\Navigation\index.tsx" />
+    <None Remove="src\Components\Camera\FootageDetail.tsx" />
+    <None Remove="src\Components\Camera\FootageList.tsx" />
+    <None Remove="src\Components\index.tsx" />
     <None Remove="src\Components\Navigation\Menu.tsx" />
     <None Remove="src\Components\Navigation\SideBar.tsx" />
     <None Remove="src\Components\Shared\Context.tsx" />
-    <None Remove="src\Components\Shared\index.tsx" />
     <None Remove="src\Models\Camera.tsx" />
+    <None Remove="src\Models\Footage.tsx" />
+    <None Remove="src\Models\FootageUrl.tsx" />
+    <None Remove="src\Models\index - Copy.tsx" />
+    <None Remove="src\Models\index.tsx" />
     <None Remove="src\Services\AjaxService.tsx" />
     <None Remove="src\Services\index.tsx" />
   </ItemGroup>
@@ -35,6 +46,25 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Funcky.Security.CameraCloudCenter.Core\Funcky.Security.CameraCloudCenter.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Update="src\Components\Camera\FootageDetail.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Update="src\Hoc\index.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Update="src\Models\index.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Update="src\Services\index.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\dist\" />
   </ItemGroup>
 
 </Project>

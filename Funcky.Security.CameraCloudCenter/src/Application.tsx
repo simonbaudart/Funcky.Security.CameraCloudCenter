@@ -1,9 +1,8 @@
 ﻿import React from "react";
 
-import { Menu, SideBar } from "./Components/Navigation";
-import { Camera, ContextContent } from "./Models";
-import { ContextProvider } from "./Components/Shared";
+import { Camera, ContextContent} from "./Models";
 import { AjaxService } from "./Services";
+import { CameraDetail, CameraList, ContextProvider, Menu } from "./Components";
 
 interface ApplicationState {
     context: ContextContent;
@@ -20,6 +19,7 @@ export class Application extends React.Component<any, ApplicationState>
                 route: document.location.hash.replace("#", "") || "/",
                 setRoute: this.setRoute.bind(this),
                 updateContext: this.updateContext.bind(this),
+                currentCamera: undefined
             },
             cameras: []
         };
@@ -44,7 +44,17 @@ export class Application extends React.Component<any, ApplicationState>
         this.updateContext(context);
     };
 
-    public render(): Object | string | number | {} | Object | Object | boolean | null | undefined {
+    private displayCameraDetail()
+    {
+        if (this.state.context.currentCamera)
+        {
+            return <CameraDetail camera={this.state.context.currentCamera}/>;
+        }
+        return <div></div>;
+    }
+
+    public render()
+    {
         return <ContextProvider value={this.state.context}>
             <div className="container-fluid">
                 <div className="row pb-3">
@@ -53,10 +63,9 @@ export class Application extends React.Component<any, ApplicationState>
                     </div>
                 </div>
 
-                <div className="row pb-3">
-                    <SideBar cameras={this.state.cameras} />
-                </div>
+                <CameraList cameras={this.state.cameras} />
                 
+                {this.displayCameraDetail()}
             </div>
         </ContextProvider>;
     }

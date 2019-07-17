@@ -1,2 +1,2 @@
-﻿export * from "./WithContext";
-export * from "./ContextAwareProps";
+﻿export * from "./ContextAwareProps";
+export * from "./WithContext";

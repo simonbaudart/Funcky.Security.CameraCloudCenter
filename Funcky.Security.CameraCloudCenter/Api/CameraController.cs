@@ -36,7 +36,7 @@ namespace Funcky.Security.CameraCloudCenter.Api
             foreach (var configuration in GlobalConfiguration.Instance.Configurations)
             {
                 var storage = configuration.GetStorageProvider();
-                var camera = new Camera { Name = configuration.Name };
+                var camera = new Camera(configuration);
                 await storage.FillLastFootage(camera);
 
                 cameras.Add(camera);

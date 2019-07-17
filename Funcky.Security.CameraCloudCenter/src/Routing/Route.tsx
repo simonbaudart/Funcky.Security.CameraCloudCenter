@@ -1,5 +1,6 @@
 ﻿import React from "react";
-import { withContext, ContextAwareProps } from '../Hoc';
+import { ContextAwareProps } from "../Hoc/ContextAwareProps";
+import { withContext } from "../Hoc/WithContext";
 
 interface RouteProps extends ContextAwareProps
 {

@@ -4,7 +4,7 @@
 
 import React from "react";
 
-import { ContextConsumer } from "../Components/Shared";
+import { ContextConsumer } from "../Components";
 import { ContextAwareProps } from "./";
 
 export const withContext = <P extends ContextAwareProps>(Component: any) =>
