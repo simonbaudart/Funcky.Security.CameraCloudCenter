@@ -39,6 +39,13 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers
         Task<List<Footage>> GetFootages(DateTime footageDate);
 
         /// <summary>
+        /// Gets the footage URL.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>The footage url and type</returns>
+        FootageUrl GetFootageUrl(string id);
+
+        /// <summary>
         /// Uploads the file to the storage.
         /// </summary>
         /// <param name="localPath">The local path.</param>

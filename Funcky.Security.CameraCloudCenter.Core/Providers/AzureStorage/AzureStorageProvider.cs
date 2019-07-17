@@ -15,7 +15,6 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 
     using Funcky.Security.CameraCloudCenter.Core.Model;
     using Funcky.Security.CameraCloudCenter.Core.Processor;
-    using Funcky.Security.CameraCloudCenter.Providers.AzureStorage;
 
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
@@ -134,6 +133,22 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         }
 
         /// <summary>
+        /// Gets the footage URL.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>The footage url and type</returns>
+        public FootageUrl GetFootageUrl(string id)
+        {
+            var name = id.Split('|')[1];
+            var containerType = this.GetContainerType(name);
+
+            var footageUrl = new FootageUrl();
+            footageUrl.Type = containerType;
+            footageUrl.Url = this.GetTemporaryAccess(name);
+            return footageUrl;
+        }
+
+        /// <summary>
         /// Uploads the file.
         /// </summary>
         /// <param name="localPath">The local path.</param>
@@ -224,7 +239,18 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         /// </returns>
         private string GetContainerType(FileInfo fileInfo)
         {
-            switch (fileInfo.Extension.Trim('.').ToLowerInvariant())
+            return this.GetContainerType(fileInfo.Name);
+        }
+
+        /// <summary>
+        /// Gets the type of the container.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>The name of the container for this type</returns>
+        private string GetContainerType(string name)
+        {
+            var extension = Path.GetExtension(name);
+            switch (extension.Trim('.').ToLowerInvariant())
             {
                 case "jpg":
                 case "jpeg":

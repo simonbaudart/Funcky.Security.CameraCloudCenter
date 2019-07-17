@@ -1,32 +1,82 @@
 ﻿import React from "react";
-import { Footage } from "../../Models";
+import { Footage, FootageUrl } from "../../Models";
+import { AjaxService } from "../../Services";
 
 export interface FootageDetailProps
 {
-    footage: Footage | undefined;
+    footage: Footage;
+    cameraName: string;
 }
 
-export const FootageDetail = (props: FootageDetailProps) =>
+export interface FootageDetailState
 {
-    let content = <div></div>;
+    footageUrl?: FootageUrl;
+}
 
-    if (props.footage)
+export class FootageDetail extends React.Component<FootageDetailProps, FootageDetailState>
+{
+    constructor(props)
     {
-        content = <div className="card">
-                      <div className="card-header" id="headingThree">
-                          <h5 className="mb-0">
-                              <button className="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                  {props.footage.title}
-                              </button>
-                          </h5>
-                      </div>
-                      <div id="collapseThree" className="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-                          <div className="card-body">
-                              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                          </div>
-                      </div>
-                  </div>;
+        super(props);
+
+        this.state = {
+        };
     }
 
-    return content;
+    showFootage()
+    {
+        if (this.state.footageUrl)
+        {
+            return;
+        }
+
+        AjaxService.get('api/footage/' + this.props.cameraName + '?id=' + this.props.footage.id).then((data: FootageUrl) =>
+        {
+            this.setState({
+                footageUrl: data
+            });
+        });
+    }
+
+    render()
+    {
+        let content = <div></div>;
+
+        if (this.state.footageUrl)
+        {
+            switch (this.state.footageUrl.type)
+            {
+                case "snap":
+                    content = <div>
+                        <img className="w-100" src={this.state.footageUrl.url} alt={this.props.footage.title} />
+                        <a href={this.state.footageUrl.url}>{this.props.footage.title}</a>
+                    </div>;
+                    break;
+                case "recording":
+                    content = <div>
+                        <video className="w-100" src={this.state.footageUrl.url} autoPlay controls onError={(error: any) => console.log(error.target.error)}></video>
+                        <a href={this.state.footageUrl.url}>{this.props.footage.title}</a>
+                    </div>;
+                    break;
+                default:
+                    content = <div>{this.state.footageUrl.url}</div>;
+                    break;
+            }
+        }
+
+        return <div className="card">
+            <div className="card-header" id={"heading" + this.props.footage.id}>
+                <h5 className="mb-0">
+                    <button className="btn btn-link collapsed" onClick={() => this.showFootage()} data-toggle="collapse" data-target={"#" + this.props.footage.id} aria-expanded="false" aria-controls="collapseThree">
+                        {this.props.footage.title}
+                    </button>
+                </h5>
+            </div>
+            <div id={this.props.footage.id} className="collapse" aria-labelledby={"heading" + this.props.footage.id} data-parent="#accordion">
+                <div className="card-body">
+                    {content}
+                </div>
+            </div>
+        </div>;
+    }
 }

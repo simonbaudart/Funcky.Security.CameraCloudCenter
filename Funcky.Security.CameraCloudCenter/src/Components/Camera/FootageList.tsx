@@ -6,6 +6,7 @@ import { FootageDetail } from "../";
 export interface FootageListProps
 {
     footage: Footage | undefined;
+    cameraName: string;
 }
 
 export const FootageList = (props: FootageListProps) =>
@@ -22,7 +23,7 @@ export const FootageList = (props: FootageListProps) =>
                 props.footage.sequences.map((footage) =>
                 {
                     return (<div key={footage.id} className="">
-                        <FootageDetail footage={footage} />
+                        <FootageDetail footage={footage} cameraName={props.cameraName} />
                     </div>);
                 })
             }

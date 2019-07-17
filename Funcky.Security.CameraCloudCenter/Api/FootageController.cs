@@ -51,5 +51,28 @@ namespace Funcky.Security.CameraCloudCenter.Api
 
             return this.Ok(footages);
         }
+
+        /// <summary>
+        /// Gets the footage URL.
+        /// </summary>
+        /// <param name="cameraName">Name of the camera.</param>
+        /// <param name="id">The identifier.</param>
+        /// <returns>The footage url</returns>
+        [Route("api/footage/{cameraName}")]
+        [HttpGet]
+        public IActionResult GetFootageUrl(string cameraName, string id)
+        {
+            var configuration = GlobalConfiguration.Instance.Configurations.SingleOrDefault(x => x.Key == cameraName);
+
+            if (configuration == null)
+            {
+                return this.NotFound();
+            }
+
+            var storageProvider = configuration.GetStorageProvider();
+            var footageUrl = storageProvider.GetFootageUrl(id);
+
+            return this.Ok(footageUrl);
+        }
     }
 }
