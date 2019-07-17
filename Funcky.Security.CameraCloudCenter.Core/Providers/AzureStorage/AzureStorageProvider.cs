@@ -212,7 +212,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
                 else
                 {
                     lastFootageCount++;
-
+                    lastFootage.Sequences.Add(footage);
                     lastFootage.FootageEndDate = footage.FootageEndDate;
                 }
 
@@ -297,7 +297,13 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
                         continue;
                     }
 
-                    var footage = new Footage { FootageDate = footageDate, FootageEndDate = footageDate.AddSeconds(footageDuration) };
+                    var footage = new Footage
+                                      {
+                                          Id = $"{blob.Container.Name}|{blob.Name}",
+                                          FootageDate = footageDate,
+                                          FootageEndDate = footageDate.AddSeconds(footageDuration),
+                                          Title = $"Footage recorded at {footageDate:yyyy-MM-dd HH:mm:ss}"
+                                      };
 
                     footages.Add(footage);
                 }

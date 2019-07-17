@@ -7,6 +7,7 @@
 namespace Funcky.Security.CameraCloudCenter.Core.Model
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
 
@@ -16,6 +17,14 @@ namespace Funcky.Security.CameraCloudCenter.Core.Model
     [DataContract]
     public class Footage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Footage" /> class.
+        /// </summary>
+        public Footage()
+        {
+            this.Sequences = new List<Footage>();
+        }
+
         /// <summary>
         /// Gets the end date.
         /// </summary>
@@ -42,6 +51,24 @@ namespace Funcky.Security.CameraCloudCenter.Core.Model
         /// </value>
         [DataMember(Name = "footageEndDate")]
         public DateTime FootageEndDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sequences.
+        /// </summary>
+        /// <value>
+        /// The sequences.
+        /// </value>
+        [DataMember(Name = "sequences")]
+        public List<Footage> Sequences { get; set; }
 
         /// <summary>
         /// Gets the start date.
