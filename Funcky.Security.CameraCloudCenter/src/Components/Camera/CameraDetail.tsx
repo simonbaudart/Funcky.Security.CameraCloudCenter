@@ -7,45 +7,61 @@ import listPlugin from '@fullcalendar/list';
 import { Camera } from "../../Models";
 import { AjaxService } from "../../Services";
 
-interface CameraDetailProps {
+interface CameraDetailProps
+{
     camera: Camera;
 }
 
-interface CameraDetailState {
-    footagesEvent: any[];
+interface CameraDetailState
+{
+    event: any;
 }
 
 export class CameraDetail extends React.Component<CameraDetailProps, CameraDetailState> {
 
-    loadFootages(date: Date) {
-        var momentDate = moment(date);
-        AjaxService.get<any[]>('api/footages/' + this.props.camera.key + '?date=' + momentDate.format('YYYYMMDD')).then((footagesEvent) => {
-            this.setState({ footagesEvent: footagesEvent });
-        });
-    }
+    private displayedDate: string;
+    private displayedCamera: string;
 
-    constructor(props: CameraDetailProps) {
+    constructor(props: CameraDetailProps)
+    {
         super(props);
 
         this.state = {
-            footagesEvent: []
+            event: undefined
         };
     }
 
-    componentDidMount() {
-        this.loadFootages(new Date());
+    selectFootage(eventClickInfo: any)
+    {
+        console.log(eventClickInfo);
+
+        this.setState({ event: eventClickInfo });
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.camera.key !== prevProps.camera.key) {
+    getFootages(info, successCallback, failureCallback)
+    {
+        var startDate: string = info.start;
+        var date: string = moment(startDate).format("YYYYMMDD");
 
-           
-
-            this.loadFootages(new Date());
+        if (this.props.camera.key === this.displayedCamera && this.displayedDate === date)
+        {
+            return;
         }
+
+        AjaxService.get<any[]>('api/footages/' + this.props.camera.key + '?date=' + date).then((footagesEvent) =>
+        {
+            this.displayedDate = date;
+            this.displayedCamera = this.props.camera.key;
+
+            successCallback(footagesEvent);
+        }).catch((ex) =>
+        {
+            failureCallback(ex);
+        });
     }
 
-    render() {
+    render()
+    {
         return <div>
             <div className="row pb-3">
                 <div className="col">
@@ -54,8 +70,8 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
             </div>
 
             <div className="row pb-3">
-                <div className="col">
-                    <FullCalendar defaultView="list" plugins={[listPlugin]} events={this.state.footagesEvent} timezone="UTC"/>
+                <div className="col-6">
+                    <FullCalendar defaultView="list" eventClick={(eventClickInfo) => this.selectFootage(eventClickInfo)} plugins={[listPlugin]} events={(info, successCallback, failureCallback) => this.getFootages(info, successCallback, failureCallback)} timezone="UTC" />
                 </div>
             </div>
         </div>;
