@@ -7,6 +7,7 @@
 namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -18,6 +19,8 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
+
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Output to Azure
@@ -103,6 +106,34 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         }
 
         /// <summary>
+        /// Gets the footages.
+        /// </summary>
+        /// <param name="footageDate">The footage date.</param>
+        /// <returns>
+        /// The list of all footages for this date
+        /// </returns>
+        public async Task<List<Footage>> GetFootages(DateTime footageDate)
+        {
+            var footages = new List<Footage>();
+
+            var storageAccount = CloudStorageAccount.Parse(this.azureStorageConfiguration.ConnectionString);
+            var storageClient = storageAccount.CreateCloudBlobClient();
+            var container = storageClient.GetContainerReference(this.azureStorageConfiguration.Container);
+
+            var snapDirectory = container.GetDirectoryReference($"{footageDate:yyyy}/{footageDate:yyyy-MM-dd}/{AzureConstants.ContainerSnap}/");
+            var snapFootages = await this.GetFootages(snapDirectory);
+            snapFootages = this.CombineFootage(snapFootages, TimeSpan.FromMinutes(5), "Snaps");
+            footages.AddRange(snapFootages);
+
+            var recordDirectory = container.GetDirectoryReference($"{footageDate:yyyy}/{footageDate:yyyy-MM-dd}/{AzureConstants.ContainerRecording}/");
+            var recordFootages = await this.GetFootages(recordDirectory);
+            recordFootages = this.CombineFootage(recordFootages, TimeSpan.FromMinutes(5), "Records");
+            footages.AddRange(recordFootages);
+
+            return footages;
+        }
+
+        /// <summary>
         /// Uploads the file.
         /// </summary>
         /// <param name="localPath">The local path.</param>
@@ -137,6 +168,61 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
         }
 
         /// <summary>
+        /// Clones the specified footage.
+        /// </summary>
+        /// <param name="footage">The footage.</param>
+        /// <returns>The cloned footage</returns>
+        private Footage Clone(Footage footage)
+        {
+            return JsonConvert.DeserializeObject<Footage>(JsonConvert.SerializeObject(footage));
+        }
+
+        /// <summary>
+        /// Combines the footage.
+        /// </summary>
+        /// <param name="footages">The footages.</param>
+        /// <param name="interval">The interval.</param>
+        /// <param name="footageName">Name of the footage.</param>
+        /// <returns>
+        /// The combined list of footages
+        /// </returns>
+        private List<Footage> CombineFootage(List<Footage> footages, TimeSpan interval, string footageName)
+        {
+            var combined = new List<Footage>();
+
+            var lastFootage = default(Footage);
+            var lastFootageCount = 0;
+
+            foreach (var footage in footages)
+            {
+                if (lastFootage == null)
+                {
+                    lastFootage = this.Clone(footage);
+                    lastFootageCount = 1;
+
+                    combined.Add(lastFootage);
+                }
+                else if (lastFootage.FootageDate.Add(interval) < footage.FootageDate)
+                {
+                    lastFootage = this.Clone(footage);
+                    lastFootageCount = 1;
+
+                    combined.Add(lastFootage);
+                }
+                else
+                {
+                    lastFootageCount++;
+
+                    lastFootage.FootageEndDate = footage.FootageEndDate;
+                }
+
+                lastFootage.Title = $"{footageName} : {lastFootageCount} footage{(lastFootageCount > 1 ? "s" : string.Empty)} from {lastFootage.FootageDate.ToString("HH:mm:ss", CultureInfo.InvariantCulture)} to {lastFootage.FootageEndDate.ToString("HH:mm:ss", CultureInfo.InvariantCulture)}";
+            }
+
+            return combined;
+        }
+
+        /// <summary>
         /// Gets the type of the container.
         /// </summary>
         /// <param name="fileInfo">The file information.</param>
@@ -164,6 +250,61 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
             }
 
             return AzureConstants.ContainerOthers;
+        }
+
+        /// <summary>
+        /// Gets the footages.
+        /// </summary>
+        /// <param name="directory">The directory.</param>
+        /// <returns>
+        /// The list of all footages
+        /// </returns>
+        private async Task<List<Footage>> GetFootages(CloudBlobDirectory directory)
+        {
+            var footages = new List<Footage>();
+
+            BlobContinuationToken continuationToken = null;
+
+            do
+            {
+                var files = await directory.ListBlobsSegmentedAsync(true, BlobListingDetails.Metadata, 1000, continuationToken, null, null);
+                continuationToken = files.ContinuationToken;
+
+                foreach (var file in files.Results)
+                {
+                    if (!(file is CloudBlockBlob blob))
+                    {
+                        continue;
+                    }
+
+                    if (!blob.Metadata.TryGetValue(AzureConstants.FootageDateMetaData, out var footageDateValue))
+                    {
+                        continue;
+                    }
+
+                    if (!DateTime.TryParseExact(footageDateValue, AzureConstants.FootageDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var footageDate))
+                    {
+                        continue;
+                    }
+
+                    if (!blob.Metadata.TryGetValue(AzureConstants.FootageDurationMetaData, out var footageDurationValue))
+                    {
+                        continue;
+                    }
+
+                    if (!double.TryParse(footageDurationValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var footageDuration))
+                    {
+                        continue;
+                    }
+
+                    var footage = new Footage { FootageDate = footageDate, FootageEndDate = footageDate.AddSeconds(footageDuration) };
+
+                    footages.Add(footage);
+                }
+            }
+            while (continuationToken != null);
+
+            return footages;
         }
 
         /// <summary>

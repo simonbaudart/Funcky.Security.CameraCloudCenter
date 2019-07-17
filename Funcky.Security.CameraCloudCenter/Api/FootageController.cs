@@ -7,10 +7,11 @@
 namespace Funcky.Security.CameraCloudCenter.Api
 {
     using System;
-    using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
+    using System.Threading.Tasks;
 
-    using Funcky.Security.CameraCloudCenter.Core.Model;
+    using Funcky.Security.CameraCloudCenter.Core.Configuration;
 
     using Microsoft.AspNetCore.Mvc;
 
@@ -31,14 +32,24 @@ namespace Funcky.Security.CameraCloudCenter.Api
         /// </returns>
         [Route("api/footages/{cameraName}")]
         [HttpGet]
-        public List<FootageDay> GetFootages(string cameraName, [FromQuery]string date)
+        public async Task<IActionResult> GetFootages(string cameraName, [FromQuery] string date)
         {
-            var sample = new FootageDay { FootageDate = DateTime.UtcNow, Title = $"Footage from {cameraName}" };
+            if (!DateTime.TryParseExact(date, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var footageDate))
+            {
+                return this.BadRequest();
+            }
 
-            var list = new List<FootageDay>();
-            list.Add(sample);
+            var configuration = GlobalConfiguration.Instance.Configurations.SingleOrDefault(x => x.Key == cameraName);
 
-            return list;
+            if (configuration == null)
+            {
+                return this.NotFound();
+            }
+
+            var storageProvider = configuration.GetStorageProvider();
+            var footages = await storageProvider.GetFootages(footageDate);
+
+            return this.Ok(footages);
         }
     }
 }

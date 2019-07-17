@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="FootageDay.cs" company="Funcky">
+//  <copyright file="Footage.cs" company="Funcky">
 //  Copyright (c) Funcky. All rights reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
@@ -14,16 +14,16 @@ namespace Funcky.Security.CameraCloudCenter.Core.Model
     /// Represent a day of footage
     /// </summary>
     [DataContract]
-    public class FootageDay
+    public class Footage
     {
         /// <summary>
-        /// Gets the date.
+        /// Gets the end date.
         /// </summary>
         /// <value>
-        /// The date.
+        /// The end.
         /// </value>
-        [DataMember(Name = "date")]
-        public string Date => this.FootageDate.ToString("yyyy-MM-dd HH:mm:ss");
+        [DataMember(Name = "end")]
+        public string End => this.FootageEndDate.ToString("yyyy-MM-dd HH:mm:ss");
 
         /// <summary>
         /// Gets or sets the footage date.
@@ -33,6 +33,24 @@ namespace Funcky.Security.CameraCloudCenter.Core.Model
         /// </value>
         [DataMember(Name = "footageDate")]
         public DateTime FootageDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the footage end date.
+        /// </summary>
+        /// <value>
+        /// The footage end date.
+        /// </value>
+        [DataMember(Name = "footageEndDate")]
+        public DateTime FootageEndDate { get; set; }
+
+        /// <summary>
+        /// Gets the start date.
+        /// </summary>
+        /// <value>
+        /// The date.
+        /// </value>
+        [DataMember(Name = "start")]
+        public string Start => this.FootageDate.ToString("yyyy-MM-dd HH:mm:ss");
 
         /// <summary>
         /// Gets or sets the title.

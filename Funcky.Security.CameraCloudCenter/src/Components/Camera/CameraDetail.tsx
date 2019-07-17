@@ -38,6 +38,9 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
 
     componentDidUpdate(prevProps) {
         if (this.props.camera.key !== prevProps.camera.key) {
+
+           
+
             this.loadFootages(new Date());
         }
     }
@@ -52,7 +55,7 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
 
             <div className="row pb-3">
                 <div className="col">
-                    <FullCalendar defaultView="list" plugins={[listPlugin]} events={this.state.footagesEvent} />
+                    <FullCalendar defaultView="list" plugins={[listPlugin]} events={this.state.footagesEvent} timezone="UTC"/>
                 </div>
             </div>
         </div>;

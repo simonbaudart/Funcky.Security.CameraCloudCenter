@@ -7,6 +7,7 @@
 namespace Funcky.Security.CameraCloudCenter.Core.Providers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -29,6 +30,13 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers
         /// <param name="camera">The camera.</param>
         /// <returns>The task to wait for in async</returns>
         Task FillLastFootage(Camera camera);
+
+        /// <summary>
+        /// Gets the footages.
+        /// </summary>
+        /// <param name="footageDate">The footage date.</param>
+        /// <returns>The list of all footages for this date</returns>
+        Task<List<Footage>> GetFootages(DateTime footageDate);
 
         /// <summary>
         /// Uploads the file to the storage.
