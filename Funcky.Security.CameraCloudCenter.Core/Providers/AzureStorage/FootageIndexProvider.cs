@@ -12,8 +12,6 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Funcky.Security.CameraCloudCenter.Providers.AzureStorage;
-
     using Microsoft.WindowsAzure.Storage;
 
     using Newtonsoft.Json;

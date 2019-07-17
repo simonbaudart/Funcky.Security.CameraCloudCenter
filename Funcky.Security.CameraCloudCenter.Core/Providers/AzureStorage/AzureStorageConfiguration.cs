@@ -4,7 +4,10 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Funcky.Security.CameraCloudCenter.Providers.AzureStorage
+using System;
+using System.Linq;
+
+namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
 {
     using System;
     using System.Linq;

@@ -12,7 +12,6 @@ namespace Funcky.Security.CameraCloudCenter.Core.Configuration
 
     using Funcky.Security.CameraCloudCenter.Core.Providers;
     using Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage;
-    using Funcky.Security.CameraCloudCenter.Providers.AzureStorage;
 
     using Newtonsoft.Json.Linq;
 
@@ -22,6 +21,15 @@ namespace Funcky.Security.CameraCloudCenter.Core.Configuration
     [DataContract]
     public class CameraConfiguration
     {
+        /// <summary>
+        /// Gets or sets the key.
+        /// </summary>
+        /// <value>
+        /// The key.
+        /// </value>
+        [DataMember(Name = "key")]
+        public string Key { get; set; }
+
         /// <summary>
         /// Gets or sets the name of the camera.
         /// </summary>

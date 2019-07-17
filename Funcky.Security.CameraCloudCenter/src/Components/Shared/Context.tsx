@@ -1,6 +1,6 @@
 ﻿import React from "react";
 
-import { ContextContent } from "../../Models/ContextContent"
+import { ContextContent } from "../../Models"
 
 const Context = React.createContext<ContextContent | null>(null);
 

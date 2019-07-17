@@ -11,6 +11,7 @@ namespace Funcky.Security.CameraCloudCenter
     using System.Linq;
 
     using Funcky.Security.CameraCloudCenter.Core.Configuration;
+    using Funcky.Security.CameraCloudCenter.Core.Exceptions;
     using Funcky.Security.CameraCloudCenter.Jobs;
 
     using Hangfire;
@@ -103,10 +104,31 @@ namespace Funcky.Security.CameraCloudCenter
 
             GlobalConfiguration.Instance.Configurations = JsonConvert.DeserializeObject<CameraConfiguration[]>(File.ReadAllText(configurationFilePath));
 
+            this.EnsureConfiguration(GlobalConfiguration.Instance.Configurations);
+
             foreach (var configuration in GlobalConfiguration.Instance.Configurations)
             {
-                RecurringJob.AddOrUpdate<CameraInputProcessor>($"PROCESS INPUT : {configuration.Name}", x => x.Process(configuration), Cron.Minutely(), TimeZoneInfo.Utc);
-                RecurringJob.AddOrUpdate<CameraOutputCleanup>($"PROCESS CLEAN : {configuration.Name}", x => x.Process(configuration), Cron.Hourly(), TimeZoneInfo.Utc);
+                RecurringJob.AddOrUpdate<CameraInputProcessor>($"PROCESS INPUT : {configuration.Key}", x => x.Process(configuration), Cron.Minutely(), TimeZoneInfo.Utc);
+                RecurringJob.AddOrUpdate<CameraOutputCleanup>($"PROCESS CLEAN : {configuration.Key}", x => x.Process(configuration), Cron.Hourly(), TimeZoneInfo.Utc);
+            }
+        }
+
+        /// <summary>
+        /// Ensures the configuration by performing checks to be sure that configuration is correct
+        /// </summary>
+        /// <param name="configurations">The configurations to check.</param>
+        private void EnsureConfiguration(CameraConfiguration[] configurations)
+        {
+            // Each configuration must have a key
+            if (configurations.Any(x => string.IsNullOrWhiteSpace(x.Key)))
+            {
+                throw new ConfigurationException("All camera configuration must have a key");
+            }
+
+            // And all key must be unique
+            if (configurations.Any(x => configurations.Count(c => c.Key == x.Key) != 1))
+            {
+                throw new ConfigurationException("All camera configuration must have a unique key");
             }
         }
     }
