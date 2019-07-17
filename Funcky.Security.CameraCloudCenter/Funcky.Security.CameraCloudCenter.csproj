@@ -17,6 +17,7 @@
     <None Remove="src\Application.tsx" />
     <None Remove="src\Components\Camera\CameraDetail.tsx" />
     <None Remove="src\Components\Camera\CameraSummary.tsx" />
+    <None Remove="src\Components\Camera\FootageList.tsx" />
     <None Remove="src\Components\index.tsx" />
     <None Remove="src\Components\Navigation\Menu.tsx" />
     <None Remove="src\Components\Navigation\SideBar.tsx" />
