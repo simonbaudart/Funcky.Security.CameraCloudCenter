@@ -1,9 +1,11 @@
 ﻿import React from "react";
 import { Footage } from "../../Models";
 
-interface FootageListProps
+import { FootageDetail } from "../";
+
+export interface FootageListProps
 {
-    footage: Footage;
+    footage: Footage | undefined;
 }
 
 export const FootageList = (props: FootageListProps) =>
@@ -16,6 +18,14 @@ export const FootageList = (props: FootageListProps) =>
             <h3>
                 {props.footage.title}
             </h3>
+            {
+                props.footage.sequences.map((footage) =>
+                {
+                    return (<div key={footage.id} className="">
+                        <FootageDetail footage={footage} />
+                    </div>);
+                })
+            }
         </div>;
     }
 

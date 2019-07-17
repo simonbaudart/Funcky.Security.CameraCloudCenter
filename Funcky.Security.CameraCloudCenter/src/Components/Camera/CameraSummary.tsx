@@ -4,7 +4,6 @@ import { ContextAwareProps, withContext } from "../../Hoc";
 
 interface CameraSummaryProps extends ContextAwareProps {
     camera: Camera;
-    key: number;
 }
 const CameraSummaryComponent = (props: CameraSummaryProps) => {
 
@@ -36,4 +35,4 @@ const CameraSummaryComponent = (props: CameraSummaryProps) => {
     </div>;
 }
 
-export const CameraSummary = withContext(CameraSummaryComponent);
+export const CameraSummary = withContext<CameraSummaryProps>(CameraSummaryComponent);

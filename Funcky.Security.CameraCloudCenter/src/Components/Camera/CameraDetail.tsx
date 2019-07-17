@@ -78,7 +78,7 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
 
             <div className="row pb-3">
                 <div className="col-6">
-                    <FullCalendar defaultView="list" eventClick={(eventClickInfo) => this.selectFootage(eventClickInfo)} plugins={[listPlugin]} events={(info, successCallback, failureCallback) => this.getFootages(info, successCallback, failureCallback)} timezone="UTC" />
+                    <FullCalendar defaultView="list" eventClick={(eventClickInfo) => this.selectFootage(eventClickInfo)} plugins={[listPlugin]} events={(info, successCallback, failureCallback) => this.getFootages(info, successCallback, failureCallback)}/>
                 </div>
                 <div className="col-6">
                     <FootageList footage={this.state.selectedFootage} />

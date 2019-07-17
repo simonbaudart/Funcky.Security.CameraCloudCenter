@@ -17,6 +17,7 @@
     <None Remove="src\Application.tsx" />
     <None Remove="src\Components\Camera\CameraDetail.tsx" />
     <None Remove="src\Components\Camera\CameraSummary.tsx" />
+    <None Remove="src\Components\Camera\FootageDetail.tsx" />
     <None Remove="src\Components\Camera\FootageList.tsx" />
     <None Remove="src\Components\index.tsx" />
     <None Remove="src\Components\Navigation\Menu.tsx" />
@@ -47,6 +48,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Update="src\Components\Camera\FootageDetail.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Update="src\Hoc\index.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>
