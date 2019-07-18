@@ -9,6 +9,7 @@ namespace Funcky.Security.CameraCloudCenter
     using System;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Funcky.Security.CameraCloudCenter.Core.Configuration;
     using Funcky.Security.CameraCloudCenter.Core.Exceptions;
@@ -17,9 +18,9 @@ namespace Funcky.Security.CameraCloudCenter
     using Hangfire;
     using Hangfire.MemoryStorage;
 
+    using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -60,6 +61,7 @@ namespace Funcky.Security.CameraCloudCenter
 
             this.StartHangfire(app);
 
+            app.UseAuthentication();
             app.UseMvc();
 
             app.UseStaticFiles();
@@ -72,6 +74,16 @@ namespace Funcky.Security.CameraCloudCenter
         /// <param name="services">The services.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+                {
+                    options.Events.OnRedirectToLogin = context =>
+                        {
+                            context.Response.StatusCode = 401;    
+                            return Task.CompletedTask;
+                        };
+                });
+
+            services.AddHttpContextAccessor();
             services.AddMvc();
             this.ConfigureHangfire(services);
         }
@@ -117,6 +129,7 @@ namespace Funcky.Security.CameraCloudCenter
         /// Ensures the configuration by performing checks to be sure that configuration is correct
         /// </summary>
         /// <param name="configurations">The configurations to check.</param>
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private void EnsureConfiguration(CameraConfiguration[] configurations)
         {
             // Each configuration must have a key

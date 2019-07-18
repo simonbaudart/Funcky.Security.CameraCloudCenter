@@ -28,6 +28,7 @@
     <None Remove="src\Models\FootageUrl.tsx" />
     <None Remove="src\Models\index - Copy.tsx" />
     <None Remove="src\Models\index.tsx" />
+    <None Remove="src\Routing\index.tsx" />
     <None Remove="src\Services\AjaxService.tsx" />
     <None Remove="src\Services\index.tsx" />
   </ItemGroup>

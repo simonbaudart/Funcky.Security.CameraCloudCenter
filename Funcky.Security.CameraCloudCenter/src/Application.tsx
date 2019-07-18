@@ -1,17 +1,20 @@
 ﻿import React from "react";
 
-import { Camera, ContextContent} from "./Models";
+import { Camera, ContextContent } from "./Models";
 import { AjaxService } from "./Services";
 import { CameraDetail, CameraList, ContextProvider, Menu } from "./Components";
+import { Route, Routes } from "./Routing";
 
-interface ApplicationState {
+interface ApplicationState
+{
     context: ContextContent;
     cameras: Camera[];
 }
 
 export class Application extends React.Component<any, ApplicationState>
 {
-    constructor(props: any) {
+    constructor(props: any)
+    {
         super(props);
 
         this.state = {
@@ -30,14 +33,23 @@ export class Application extends React.Component<any, ApplicationState>
         AjaxService.get<Camera[]>('/api/cameras').then((data) =>
         {
             this.setState({ cameras: data });
-        });
+        })
+            .catch((code: number) =>
+            {
+                if (code === 401)
+                {
+                    this.state.context.setRoute(Routes.login);
+                }
+            });
     }
 
-    public updateContext(context: ContextContent) {
+    public updateContext(context: ContextContent)
+    {
         this.setState({ context: context });
     }
 
-    public setRoute = (route: string) => {
+    public setRoute = (route: string) =>
+    {
         window.location.href = '#' + route;
         var context = this.state.context;
         context.route = route;
@@ -48,7 +60,7 @@ export class Application extends React.Component<any, ApplicationState>
     {
         if (this.state.context.currentCamera)
         {
-            return <CameraDetail camera={this.state.context.currentCamera}/>;
+            return <CameraDetail camera={this.state.context.currentCamera} />;
         }
         return <div></div>;
     }
@@ -63,9 +75,15 @@ export class Application extends React.Component<any, ApplicationState>
                     </div>
                 </div>
 
-                <CameraList cameras={this.state.cameras} />
-                
-                {this.displayCameraDetail()}
+                <Route path={Routes.dashboard}>
+                    <CameraList cameras={this.state.cameras} />
+
+                    {this.displayCameraDetail()}
+                </Route>
+
+                <Route path={Routes.login}>
+                   <h1>Hello Login</h1>
+                </Route>
             </div>
         </ContextProvider>;
     }

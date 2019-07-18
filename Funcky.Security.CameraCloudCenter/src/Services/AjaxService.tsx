@@ -72,7 +72,7 @@ export const AjaxService = {
                     }
                     else
                     {
-                        reject(null);
+                        reject(response.status);
                     }
                 });
         });
