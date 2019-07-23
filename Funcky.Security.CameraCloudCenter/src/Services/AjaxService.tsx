@@ -30,6 +30,55 @@ export const AjaxService = {
 
         return promise;
     },
+    postNoReturn<Tin>(route: RequestInfo, data: Tin): Promise<number>
+    {
+        const promise = new Promise<number>((resolve, reject) =>
+        {
+            fetch(route,
+                    {
+                        headers: headers,
+                        method: "post",
+                        body: JSON.stringify(data)
+                    })
+                .then((response) =>
+                {
+                    if (response.ok)
+                    {
+                        resolve(response.status);
+                    }                    
+                    else
+                    {
+                        reject(response.status);
+                    }
+                });
+        });
+
+        return promise;
+    },
+    postNoData(route: RequestInfo): Promise<number>
+    {
+        const promise = new Promise<number>((resolve, reject) =>
+        {
+            fetch(route,
+                    {
+                        headers: headers,
+                        method: "post"
+                    })
+                .then((response) =>
+                {
+                    if (response.ok)
+                    {
+                        resolve(response.status);
+                    }                    
+                    else
+                    {
+                        reject(response.status);
+                    }
+                });
+        });
+
+        return promise;
+    },
     put<Tin>(route: RequestInfo, data: Tin): Promise<boolean>
     {
         const promise = new Promise<boolean>((resolve, reject) =>
@@ -37,7 +86,7 @@ export const AjaxService = {
             fetch(route,
                 {
                     headers: headers,
-                    method: "post",
+                    method: "put",
                     body: JSON.stringify(data)
                 })
                 .then((response) =>
@@ -72,7 +121,7 @@ export const AjaxService = {
                     }
                     else
                     {
-                        reject(null);
+                        reject(response.status);
                     }
                 });
         });

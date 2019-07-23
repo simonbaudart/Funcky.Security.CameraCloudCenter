@@ -7,12 +7,15 @@
 namespace Funcky.Security.CameraCloudCenter.Api
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
 
     using Funcky.Security.CameraCloudCenter.Core.Configuration;
+    using Funcky.Security.CameraCloudCenter.Core.Model;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -20,6 +23,7 @@ namespace Funcky.Security.CameraCloudCenter.Api
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [ApiController]
+    [Authorize]
     public class FootageController : ControllerBase
     {
         /// <summary>
@@ -32,7 +36,7 @@ namespace Funcky.Security.CameraCloudCenter.Api
         /// </returns>
         [Route("api/footages/{cameraName}")]
         [HttpGet]
-        public async Task<IActionResult> GetFootages(string cameraName, [FromQuery] string date)
+        public async Task<ActionResult<List<Footage>>> GetFootages(string cameraName, [FromQuery] string date)
         {
             if (!DateTime.TryParseExact(date, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var footageDate))
             {
@@ -60,7 +64,7 @@ namespace Funcky.Security.CameraCloudCenter.Api
         /// <returns>The footage url</returns>
         [Route("api/footage/{cameraName}")]
         [HttpGet]
-        public IActionResult GetFootageUrl(string cameraName, string id)
+        public ActionResult<FootageUrl> GetFootageUrl(string cameraName, string id)
         {
             var configuration = GlobalConfiguration.Instance.Configurations.SingleOrDefault(x => x.Key == cameraName);
 

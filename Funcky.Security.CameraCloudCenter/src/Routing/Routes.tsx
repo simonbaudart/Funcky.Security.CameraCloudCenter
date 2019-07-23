@@ -1,3 +1,4 @@
 ﻿export const Routes = {
-    dashboard: "/"
+    dashboard: "/",
+    login: "/login",
 };
