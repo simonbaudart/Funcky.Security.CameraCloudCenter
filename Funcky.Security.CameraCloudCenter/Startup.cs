@@ -11,6 +11,8 @@ namespace Funcky.Security.CameraCloudCenter
     using System.Linq;
     using System.Threading.Tasks;
 
+    using AspNetCoreRateLimit;
+
     using Funcky.Security.CameraCloudCenter.Core.Configuration;
     using Funcky.Security.CameraCloudCenter.Core.Exceptions;
     using Funcky.Security.CameraCloudCenter.Jobs;
@@ -21,6 +23,7 @@ namespace Funcky.Security.CameraCloudCenter
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -34,12 +37,22 @@ namespace Funcky.Security.CameraCloudCenter
     public class Startup
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="Startup"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        public Startup(IConfiguration configuration)
+        {
+            this.Configuration = configuration;
+        }
+
+
+        /// <summary>
         /// Gets the configuration.
         /// </summary>
         /// <value>
         /// The configuration.
         /// </value>
-        public IConfigurationRoot Configuration { get; private set; }
+        public IConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,10 +66,6 @@ namespace Funcky.Security.CameraCloudCenter
                 app.UseDeveloperExceptionPage();
             }
 
-            var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath).AddJsonFile("appsettings.json", true, true).AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
-            builder.AddEnvironmentVariables();
-            this.Configuration = builder.Build();
-
             var configurationFilePath = this.Configuration.GetConnectionString("ConfigFile");
 
             if (!File.Exists(configurationFilePath))
@@ -67,6 +76,8 @@ namespace Funcky.Security.CameraCloudCenter
             GlobalConfiguration.Instance = JsonConvert.DeserializeObject<GlobalConfiguration>(File.ReadAllText(configurationFilePath));
 
             this.StartHangfire(app);
+
+            app.UseIpRateLimiting();
 
             app.UseAuthentication();
             app.UseMvc();
@@ -81,17 +92,25 @@ namespace Funcky.Security.CameraCloudCenter
         /// <param name="services">The services.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
-                {
-                    options.Events.OnRedirectToLogin = context =>
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(
+                    options =>
                         {
-                            context.Response.StatusCode = 401;    
-                            return Task.CompletedTask;
-                        };
-                });
+                            options.Events.OnRedirectToLogin = context =>
+                                {
+                                    context.Response.StatusCode = 401;
+                                    return Task.CompletedTask;
+                                };
+                        });
 
+            services.AddMemoryCache();
+            services.AddOptions();
             services.AddHttpContextAccessor();
+
+            this.ConfigureIpRateLimit(services);
+
             services.AddMvc();
+
             this.ConfigureHangfire(services);
         }
 
@@ -106,21 +125,19 @@ namespace Funcky.Security.CameraCloudCenter
         }
 
         /// <summary>
-        /// Starts the hangfire.
+        /// Configures the ip rate limit.
         /// </summary>
-        /// <param name="app">The application.</param>
-        /// <exception cref="System.ApplicationException">The configuration file {configurationFilePath} does not exists</exception>
-        private void StartHangfire(IApplicationBuilder app)
+        /// <param name="services">The services.</param>
+        private void ConfigureIpRateLimit(IServiceCollection services)
         {
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new EveryOneAuthorization() } });
+            services.Configure<IpRateLimitOptions>(this.Configuration.GetSection("IpRateLimiting"));
+            services.Configure<IpRateLimitPolicies>(this.Configuration.GetSection("IpRateLimitPolicies"));
 
-            this.EnsureConfiguration(GlobalConfiguration.Instance.Configurations);
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
 
-            foreach (var configuration in GlobalConfiguration.Instance.Configurations)
-            {
-                RecurringJob.AddOrUpdate<CameraInputProcessor>($"PROCESS INPUT : {configuration.Key}", x => x.Process(configuration), Cron.Minutely(), TimeZoneInfo.Utc);
-                RecurringJob.AddOrUpdate<CameraOutputCleanup>($"PROCESS CLEAN : {configuration.Key}", x => x.Process(configuration), Cron.Hourly(), TimeZoneInfo.Utc);
-            }
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
         }
 
         /// <summary>
@@ -140,6 +157,24 @@ namespace Funcky.Security.CameraCloudCenter
             if (configurations.Any(x => configurations.Count(c => c.Key == x.Key) != 1))
             {
                 throw new ConfigurationException("All camera configuration must have a unique key");
+            }
+        }
+
+        /// <summary>
+        /// Starts the hangfire.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <exception cref="System.ApplicationException">The configuration file {configurationFilePath} does not exists</exception>
+        private void StartHangfire(IApplicationBuilder app)
+        {
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new EveryOneAuthorization() } });
+
+            this.EnsureConfiguration(GlobalConfiguration.Instance.Configurations);
+
+            foreach (var configuration in GlobalConfiguration.Instance.Configurations)
+            {
+                RecurringJob.AddOrUpdate<CameraInputProcessor>($"PROCESS INPUT : {configuration.Key}", x => x.Process(configuration), Cron.Minutely(), TimeZoneInfo.Utc);
+                RecurringJob.AddOrUpdate<CameraOutputCleanup>($"PROCESS CLEAN : {configuration.Key}", x => x.Process(configuration), Cron.Hourly(), TimeZoneInfo.Utc);
             }
         }
     }
