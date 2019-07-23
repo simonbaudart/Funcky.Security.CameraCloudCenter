@@ -20,6 +20,7 @@
   <ItemGroup>
     <PackageReference Include="Hangfire" Version="1.7.4" />
     <PackageReference Include="Hangfire.MemoryStorage" Version="1.6.1" />
+    <PackageReference Include="Isopoh.Cryptography.Argon2" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.5.2">

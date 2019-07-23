@@ -13,10 +13,14 @@ namespace Funcky.Security.CameraCloudCenter.Api
 
     using Funcky.Security.CameraCloudCenter.Core.Model;
 
+    using Isopoh.Cryptography.Argon2;
+
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// All methods to access to the login
@@ -24,6 +28,33 @@ namespace Funcky.Security.CameraCloudCenter.Api
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     public class LoginController : Controller
     {
+#if DEBUG
+
+        /// <summary>
+        /// Generates the hash.
+        /// </summary>
+        /// <param name="authentication">The authentication.</param>
+        /// <returns>The hash and the salt to store in configuration</returns>
+        [HttpPost]
+        [Route("api/login/generate")]
+        [AllowAnonymous]
+        public ActionResult GenerateHash([FromBody] JObject authentication)
+        {
+            var password = authentication["password"]?.ToString();
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                return this.Unauthorized();
+            }
+
+            var result = new JObject();
+            result["hash"] = Argon2.Hash(password);
+
+            return this.Ok(result);
+        }
+
+#endif
+
         /// <summary>
         /// Logins the specified authentication.
         /// </summary>
@@ -32,7 +63,7 @@ namespace Funcky.Security.CameraCloudCenter.Api
         [HttpPut]
         [Route("api/login")]
         [AllowAnonymous]
-        public async Task<ActionResult> Login([FromBody]AuthenticationInformation authentication)
+        public async Task<ActionResult> Login([FromBody] AuthenticationInformation authentication)
         {
             if (string.IsNullOrWhiteSpace(authentication?.Login) || string.IsNullOrWhiteSpace(authentication.Password))
             {
