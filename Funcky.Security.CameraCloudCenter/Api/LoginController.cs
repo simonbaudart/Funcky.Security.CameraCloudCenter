@@ -11,6 +11,7 @@ namespace Funcky.Security.CameraCloudCenter.Api
     using System.Security.Claims;
     using System.Threading.Tasks;
 
+    using Funcky.Security.CameraCloudCenter.Core.Configuration;
     using Funcky.Security.CameraCloudCenter.Core.Model;
 
     using Isopoh.Cryptography.Argon2;
@@ -70,20 +71,25 @@ namespace Funcky.Security.CameraCloudCenter.Api
                 return this.Unauthorized();
             }
 
-            var result = authentication.Login == authentication.Password;
+            var user = GlobalConfiguration.Instance.Users.SingleOrDefault(x => x.Email?.Equals(authentication.Login, StringComparison.InvariantCultureIgnoreCase) == true);
 
-            if (result)
+            if (user == null)
             {
-                var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
-                identity.AddClaim(new Claim(ClaimTypes.Name, authentication.Login));
-
-                var principal = new ClaimsPrincipal(identity);
-                await this.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-                return this.Ok();
+                return this.Unauthorized();
             }
 
-            return this.Unauthorized();
+            if (!Argon2.Verify(user.Hash, authentication.Password))
+            {
+                return this.Unauthorized();
+            }
+
+            var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+            identity.AddClaim(new Claim(ClaimTypes.Name, authentication.Login));
+
+            var principal = new ClaimsPrincipal(identity);
+            await this.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            return this.Ok();
         }
     }
 }

@@ -57,7 +57,14 @@ namespace Funcky.Security.CameraCloudCenter
             builder.AddEnvironmentVariables();
             this.Configuration = builder.Build();
 
-            GlobalConfiguration.Instance = new GlobalConfiguration { FFProbePath = this.Configuration.GetConnectionString("ffprobe") };
+            var configurationFilePath = this.Configuration.GetConnectionString("ConfigFile");
+
+            if (!File.Exists(configurationFilePath))
+            {
+                throw new ApplicationException($"The configuration file {configurationFilePath} does not exists");
+            }
+
+            GlobalConfiguration.Instance = JsonConvert.DeserializeObject<GlobalConfiguration>(File.ReadAllText(configurationFilePath));
 
             this.StartHangfire(app);
 
@@ -106,15 +113,6 @@ namespace Funcky.Security.CameraCloudCenter
         private void StartHangfire(IApplicationBuilder app)
         {
             app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new EveryOneAuthorization() } });
-
-            var configurationFilePath = this.Configuration.GetConnectionString("CameraConfigurations");
-
-            if (!File.Exists(configurationFilePath))
-            {
-                throw new ApplicationException($"The configuration file {configurationFilePath} does not exists");
-            }
-
-            GlobalConfiguration.Instance.Configurations = JsonConvert.DeserializeObject<CameraConfiguration[]>(File.ReadAllText(configurationFilePath));
 
             this.EnsureConfiguration(GlobalConfiguration.Instance.Configurations);
 
