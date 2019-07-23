@@ -28,7 +28,7 @@ namespace Funcky.Security.CameraCloudCenter.Api
         [HttpPost]
         [Route("api/login")]
         [AllowAnonymous]
-        public IActionResult Login(AuthenticationInformation authentication)
+        public ActionResult Login(AuthenticationInformation authentication)
         {
             var result = authentication.Login == authentication.Password;
 
