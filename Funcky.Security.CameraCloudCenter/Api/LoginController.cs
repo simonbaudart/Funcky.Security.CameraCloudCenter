@@ -29,7 +29,7 @@ namespace Funcky.Security.CameraCloudCenter.Api
         /// </summary>
         /// <param name="authentication">The authentication.</param>
         /// <returns>The result of the login</returns>
-        [HttpPost]
+        [HttpPut]
         [Route("api/login")]
         [AllowAnonymous]
         public async Task<ActionResult> Login([FromBody]AuthenticationInformation authentication)

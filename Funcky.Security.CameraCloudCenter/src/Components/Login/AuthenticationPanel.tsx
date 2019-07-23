@@ -10,6 +10,7 @@ interface AuthenticationPanelState
 {
     email?: string;
     password?: string;
+    credentialsError: boolean;
 }
 
 class AuthenticationPanelComponent extends React.Component<AuthenticationPanelProps, AuthenticationPanelState>
@@ -19,6 +20,7 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
         super(props);
 
         this.state = {
+            credentialsError: false
         };
     }
 
@@ -26,6 +28,8 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
 
     public login()
     {
+        this.setState({ credentialsError: false });
+
         const data = {
             login: this.state.email,
             password: this.state.password
@@ -34,15 +38,23 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
         AjaxService.put("api/login", data).then(() =>
         {
             this.props.context.setRoute(Routes.dashboard);
-        }).catch((e) =>
+        }).catch(() =>
         {
-            console.log(e);
-            console.log("oups");
+            this.setState({ credentialsError: true });
         });
     }
 
     public render()
     {
+        let errorMessage = <></>;
+
+        if (this.state.credentialsError)
+        {
+            errorMessage = <div className="alert alert-danger" role="alert">
+                               Your credentials are invalid, please try again.
+                           </div>;
+        }
+
         return <React.Fragment>
             <div className="row">
                 <div className="col-12 col-md-6 col-lg-4 mx-auto">
@@ -67,6 +79,7 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
                                 this.login();
                             }}>Submit</button>
                         </div>
+                        {errorMessage}
                     </form>
                 </div>
             </div>

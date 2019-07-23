@@ -37,7 +37,7 @@ export const AjaxService = {
             fetch(route,
                 {
                     headers: headers,
-                    method: "post",
+                    method: "put",
                     body: JSON.stringify(data)
                 })
                 .then((response) =>
