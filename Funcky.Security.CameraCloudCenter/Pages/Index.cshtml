@@ -1,7 +1,9 @@
 ﻿@page
+@using Funcky.Security.CameraCloudCenter.Extensions
 @{
     Layout = null;
 }
+@inject Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnv;
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,6 +29,7 @@
     <script>$(document).ready(function () { $('body').bootstrapMaterialDesign(); });</script>
     <script src="https://unpkg.com/moment@2.24.0/moment.js"></script>
     <script src="https://unpkg.com/@@fullcalendar/core@4.2.0/main.min.js"></script>
-    <script src="dist/app.bundle.js"></script>
+
+    <script src="@Url.GetPathWithCrc("dist/app.bundle.js", hostingEnv)"></script>
 </body>
 </html>
