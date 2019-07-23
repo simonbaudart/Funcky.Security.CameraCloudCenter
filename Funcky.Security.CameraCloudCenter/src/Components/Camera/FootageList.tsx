@@ -11,7 +11,7 @@ export interface FootageListProps
 
 export const FootageList = (props: FootageListProps) =>
 {
-    let content = <div></div>;
+    let content = <></>;
 
     if (props.footage)
     {
