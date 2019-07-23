@@ -8,9 +8,13 @@ namespace Funcky.Security.CameraCloudCenter.Api
 {
     using System;
     using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
     using Funcky.Security.CameraCloudCenter.Core.Model;
 
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -28,12 +32,23 @@ namespace Funcky.Security.CameraCloudCenter.Api
         [HttpPost]
         [Route("api/login")]
         [AllowAnonymous]
-        public ActionResult Login(AuthenticationInformation authentication)
+        public async Task<ActionResult> Login([FromBody]AuthenticationInformation authentication)
         {
+            if (string.IsNullOrWhiteSpace(authentication?.Login) || string.IsNullOrWhiteSpace(authentication.Password))
+            {
+                return this.Unauthorized();
+            }
+
             var result = authentication.Login == authentication.Password;
 
             if (result)
             {
+                var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+                identity.AddClaim(new Claim(ClaimTypes.Name, authentication.Login));
+
+                var principal = new ClaimsPrincipal(identity);
+                await this.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
                 return this.Ok();
             }
 
