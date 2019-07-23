@@ -2,7 +2,7 @@
 
 import { Camera, ContextContent } from "./Models";
 import { AjaxService } from "./Services";
-import { CameraDetail, CameraList, ContextProvider, Menu } from "./Components";
+import { CameraDetail, CameraList, ContextProvider, AuthenticationPanel, Menu } from "./Components";
 import { Route, Routes } from "./Routing";
 
 interface ApplicationState
@@ -82,7 +82,7 @@ export class Application extends React.Component<any, ApplicationState>
                 </Route>
 
                 <Route path={Routes.login}>
-                   <h1>Hello Login</h1>
+                   <AuthenticationPanel />
                 </Route>
             </div>
         </ContextProvider>;

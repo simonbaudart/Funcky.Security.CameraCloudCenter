@@ -10,27 +10,11 @@
 
   <PropertyGroup>
     <!-- Makes the TypeScript compilation task a no-op -->
-    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptCompileBlocked>false</TypeScriptCompileBlocked>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="src\Application.tsx" />
-    <None Remove="src\Components\Camera\CameraDetail.tsx" />
-    <None Remove="src\Components\Camera\CameraSummary.tsx" />
-    <None Remove="src\Components\Camera\FootageDetail.tsx" />
-    <None Remove="src\Components\Camera\FootageList.tsx" />
-    <None Remove="src\Components\index.tsx" />
-    <None Remove="src\Components\Navigation\Menu.tsx" />
-    <None Remove="src\Components\Navigation\SideBar.tsx" />
-    <None Remove="src\Components\Shared\Context.tsx" />
-    <None Remove="src\Models\Camera.tsx" />
-    <None Remove="src\Models\Footage.tsx" />
-    <None Remove="src\Models\FootageUrl.tsx" />
-    <None Remove="src\Models\index - Copy.tsx" />
-    <None Remove="src\Models\index.tsx" />
-    <None Remove="src\Routing\index.tsx" />
-    <None Remove="src\Services\AjaxService.tsx" />
-    <None Remove="src\Services\index.tsx" />
+    <None Remove="src\Components\Login\AuthenticationPanel.tsx" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,65 @@
+﻿import React from "react";
+
+import { AjaxService } from "../../Services";
+
+interface AuthenticationPanelProps {}
+
+interface AuthenticationPanelState
+{
+    email?: string;
+    password?: string;
+}
+
+export class AuthenticationPanel extends React.Component<AuthenticationPanelProps, AuthenticationPanelState>
+{
+    constructor(props: AuthenticationPanelProps)
+    {
+        super(props);
+
+        this.state = {
+        };
+    }
+
+    public componentDidMount() {}
+
+    public login()
+    {
+        var data = {
+            login: this.state.email,
+            password: this.state.password
+        };
+
+        AjaxService.post('api/login', data).then((result) =>
+        {
+            console.log(result);
+        });
+    }
+
+    public render()
+    {
+        return <React.Fragment>
+                   <div className="row">
+                       <div className="col-12 col-md-6 col-lg-4 mx-auto">
+                           <h1>Please enter your credentials</h1>
+                       </div>
+                   </div>
+                   <div className="row">
+                       <div className="col-12 col-md-6 col-lg-4 mx-auto">
+                           <form>
+                               <div className="form-group">
+                                   <label htmlFor="email" className="bmd-label-floating">Email address</label>
+                            <input type="email" className="form-control" id="email" onChange={(e) => this.setState({ email: e.target.value })}/>
+                               </div>
+                               <div className="form-group">
+                                   <label htmlFor="password" className="bmd-label-floating">Password</label>
+                                   <input type="password" className="form-control" id="password" onChange={(e) => this.setState({ password: e.target.value })}/>
+                               </div>
+                               <div className="form-group text-right">
+                            <button type="submit" className="btn btn-primary btn-raised" onClick={(e) => {e.preventDefault(); this.login();}}>Submit</button>
+                               </div>
+                           </form>
+                       </div>
+                   </div>
+               </React.Fragment>;
+    }
+}
