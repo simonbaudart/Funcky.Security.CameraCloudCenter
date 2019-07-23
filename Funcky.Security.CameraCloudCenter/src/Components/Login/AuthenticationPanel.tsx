@@ -35,7 +35,7 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
             password: this.state.password
         };
 
-        AjaxService.put("api/login", data).then(() =>
+        AjaxService.postNoReturn("api/login", data).then(() =>
         {
             this.props.context.setRoute(Routes.dashboard);
         }).catch(() =>

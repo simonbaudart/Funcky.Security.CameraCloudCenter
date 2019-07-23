@@ -42,13 +42,14 @@ export class Application extends React.Component<any, ApplicationState>
     {
         window.location.href = `#${route}`;
         var context = this.state.context;
-        context.route = route;
-        this.updateContext(context);
 
-        if (route === Routes.dashboard)
+        if (context.route !== route)
         {
             this.loadCameras();
         }
+
+        context.route = route;
+        this.updateContext(context);
     };
 
     private displayCameraDetail()
@@ -62,6 +63,8 @@ export class Application extends React.Component<any, ApplicationState>
 
     public loadCameras()
     {
+        this.setState({ cameras: [] });
+
         AjaxService.get<Camera[]>("/api/cameras").then((data) =>
             {
                 this.setState({ cameras: data });

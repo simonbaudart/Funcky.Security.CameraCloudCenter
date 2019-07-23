@@ -27,6 +27,7 @@ namespace Funcky.Security.CameraCloudCenter.Api
     /// All methods to access to the login
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    [Authorize]
     public class LoginController : Controller
     {
 #if DEBUG
@@ -61,7 +62,7 @@ namespace Funcky.Security.CameraCloudCenter.Api
         /// </summary>
         /// <param name="authentication">The authentication.</param>
         /// <returns>The result of the login</returns>
-        [HttpPut]
+        [HttpPost]
         [Route("api/login")]
         [AllowAnonymous]
         public async Task<ActionResult> Login([FromBody] AuthenticationInformation authentication)
@@ -89,6 +90,18 @@ namespace Funcky.Security.CameraCloudCenter.Api
             var principal = new ClaimsPrincipal(identity);
             await this.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Logouts this user.
+        /// </summary>
+        /// <returns>204 no content</returns>
+        [HttpPost]
+        [Route("api/logout")]
+        public async Task<ActionResult> Logout()
+        {
+            await this.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return this.Ok();
         }
     }
