@@ -1,6 +1,6 @@
 ﻿import React from "react";
 // ReSharper disable once UnusedLocalImport
-import moment from "moment";
+import format from 'date-fns/format';
 
 const FullCalendar = React.lazy(() => import(/* webpackChunkName: "FullCalendar" */ "@fullcalendar/react"));
 
@@ -50,7 +50,7 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
     public getFootages(info, successCallback, failureCallback)
     {
         const startDate: string = info.start;
-        var date: string = moment(startDate).format("YYYYMMDD");
+        var date: string = format(startDate, "YYYYMMDD"); 
 
         if (this.props.camera.key === this.displayedCamera && this.displayedDate === date)
         {
