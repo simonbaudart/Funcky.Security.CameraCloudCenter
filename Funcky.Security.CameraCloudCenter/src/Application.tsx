@@ -2,8 +2,10 @@
 
 import { Camera, ContextContent } from "./Models";
 import { AjaxService } from "./Services";
-import { CameraDetail, CameraList, ContextProvider, AuthenticationPanel, Menu } from "./Components";
+import { CameraDetail, CameraList, ContextProvider, Menu } from "./Components";
 import { Route, Routes } from "./Routing";
+
+const AuthenticationPanel = React.lazy(() => import(/* webpackChunkName: "AuthenticationPanel" */ "./Components/Login/AuthenticationPanel"));
 
 interface ApplicationState
 {
@@ -56,7 +58,7 @@ export class Application extends React.Component<any, ApplicationState>
     {
         if (this.state.context.currentCamera)
         {
-            return <CameraDetail camera={this.state.context.currentCamera}/>;
+            return <CameraDetail camera={this.state.context.currentCamera} />;
         }
         return <div></div>;
     }
@@ -66,9 +68,9 @@ export class Application extends React.Component<any, ApplicationState>
         this.setState({ cameras: [] });
 
         AjaxService.get<Camera[]>("/api/cameras").then((data) =>
-            {
-                this.setState({ cameras: data });
-            })
+        {
+            this.setState({ cameras: data });
+        })
             .catch((code: number) =>
             {
                 if (code === 401)
@@ -81,23 +83,25 @@ export class Application extends React.Component<any, ApplicationState>
     public render()
     {
         return <ContextProvider value={this.state.context}>
-                   <div className="container-fluid">
-                       <div className="row pb-3">
-                           <div className="col">
-                               <Menu/>
-                           </div>
-                       </div>
+            <div className="container-fluid">
+                <div className="row pb-3">
+                    <div className="col">
+                        <Menu />
+                    </div>
+                </div>
 
-                       <Route path={Routes.dashboard}>
-                           <CameraList cameras={this.state.cameras}/>
+                <Route path={Routes.dashboard}>
+                    <CameraList cameras={this.state.cameras} />
 
-                           {this.displayCameraDetail()}
-                       </Route>
+                    {this.displayCameraDetail()}
+                </Route>
 
-                       <Route path={Routes.login}>
-                           <AuthenticationPanel/>
-                       </Route>
-                   </div>
-               </ContextProvider>;
+                <Route path={Routes.login}>
+                    <React.Suspense fallback={<div>Loading...</div>}>
+                        <AuthenticationPanel />
+                    </React.Suspense>
+                </Route>
+            </div>
+        </ContextProvider>;
     }
 }

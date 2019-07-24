@@ -9,10 +9,14 @@ namespace Funcky.Security.CameraCloudCenter.Extensions
     using System;
     using System.IO;
     using System.Linq;
+    using System.Security.Cryptography;
 
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
 
+    /// <summary>
+    /// Extensions of UrlHelper
+    /// </summary>
     public static class UrlHelperExtensions
     {
         /// <summary>
@@ -34,12 +38,20 @@ namespace Funcky.Security.CameraCloudCenter.Extensions
                 return path;
             }
 
-            if (path.IndexOf("?", StringComparison.Ordinal) == -1)
+            string hash;
+
+            using (var sha256 = SHA256.Create())
             {
-                return path + "?v=" + fileInfo.LastWriteTimeUtc.Ticks;
+                hash = BitConverter.ToString(sha256.ComputeHash(File.ReadAllBytes(fileInfo.FullName)));
+                hash = hash.Replace("-", string.Empty).ToLowerInvariant();
             }
 
-            return path + "&v=" + fileInfo.LastWriteTimeUtc.Ticks;
+            if (path.IndexOf("?", StringComparison.Ordinal) == -1)
+            {
+                return path + "?v=" + hash;
+            }
+
+            return path + "&v=" + hash;
         }
     }
 }

@@ -347,3 +347,4 @@ ASALocalRun/
 /Prism.MentalUp.Web/App_Data/cache
 /Prism.MentalUp.Web/App_Data/Models
 /Funcky.Security.CameraCloudCenter/wwwroot/dist/app.bundle.js
+*.js
