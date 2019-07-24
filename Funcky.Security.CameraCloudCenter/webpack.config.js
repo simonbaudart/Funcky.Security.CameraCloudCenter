@@ -17,7 +17,9 @@ var config = {
     // Define output directory.
     output: {
         path: DIST_DIR,
-        filename: "[name].bundle.js"
+        filename: "[name].bundle.js",
+        chunkFilename: "[name].bundle.js",
+        publicPath: "/dist/"
     },
 
     // Enable sourcemaps for debugging webpack's output.
@@ -42,21 +44,24 @@ var config = {
     },
 
     optimization: {
+        splitChunks: {
+            chunks: "all"
+        },
         minimizer: [
             new TerserJSPlugin({})
         ]
-    },
+    }
 
-//   plugins: [
-//     new HtmlWebpackPlugin({
-//       hash: true,
-//       title: 'React with TypeScript, bundled with Webpack',
-//       template: SRC_DIR + '/index.html',
-//       filename: DIST_DIR + '/index.html'
-//     }),
-//     new webpack.NamedModulesPlugin(),
-//     new webpack.HotModuleReplacementPlugin()
-//   ],
+    //   plugins: [
+    //     new HtmlWebpackPlugin({
+    //       hash: true,
+    //       title: 'React with TypeScript, bundled with Webpack',
+    //       template: SRC_DIR + '/index.html',
+    //       filename: DIST_DIR + '/index.html'
+    //     }),
+    //     new webpack.NamedModulesPlugin(),
+    //     new webpack.HotModuleReplacementPlugin()
+    //   ],
 
     // Mount web server with HMR.
     //devServer: {

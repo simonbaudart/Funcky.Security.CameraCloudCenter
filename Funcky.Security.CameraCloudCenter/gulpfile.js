@@ -8,14 +8,22 @@ var gulp = require("gulp"),
     prefix = require("gulp-autoprefixer"),
     sourcemaps = require("gulp-sourcemaps"),
     gulpWebpack = require("webpack-stream"),
-    watch = require("gulp-watch");
+    watch = require("gulp-watch"),
+    clean = require('gulp-clean');
 
 var sassOptions = {
     outputStyle: "expanded"
 };
 
-gulp.task("react:dev",
-    function()
+gulp.task("clean",
+    function ()
+    {
+        return gulp.src('./wwwroot/dist/*.js', { read: false })
+            .pipe(clean());
+    });
+
+gulp.task("react:dev", gulp.series("clean",
+    function ()
     {
         var config = require('./webpack.config');
         config.mode = 'development';
@@ -23,10 +31,10 @@ gulp.task("react:dev",
         return gulp.src('./src/**/*.ts')
             .pipe(gulpWebpack(config, require('webpack')))
             .pipe(gulp.dest('./wwwroot/dist/'));
-    });
+    }));
 
-gulp.task("react:prod",
-    function()
+gulp.task("react:prod", gulp.series("clean",
+    function ()
     {
         var config = require('./webpack.config');
         config.mode = 'production';
@@ -34,10 +42,10 @@ gulp.task("react:prod",
         return gulp.src('./src/**/*.ts')
             .pipe(gulpWebpack(config, require('webpack')))
             .pipe(gulp.dest('./wwwroot/dist/'));
-    });
+    }));
 
 gulp.task("react:watch",
-    function()
+    function ()
     {
         gulp.watch('./src/**/*.*', gulp.parallel("react:dev"));
     });
