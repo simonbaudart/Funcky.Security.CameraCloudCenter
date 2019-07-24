@@ -12,8 +12,8 @@ namespace Funcky.Security.CameraCloudCenter.Api
     using System.Linq;
     using System.Threading.Tasks;
 
-    using Funcky.Security.CameraCloudCenter.Core.Configuration;
-    using Funcky.Security.CameraCloudCenter.Core.Model;
+    using Core.Configuration;
+    using Core.Model;
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
