@@ -55,7 +55,7 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
                            </div>;
         }
 
-        return <React.Fragment>
+        return <>
             <div className="row">
                 <div className="col-12 col-md-6 col-lg-4 mx-auto">
                     <h1>Please enter your credentials</h1>
@@ -79,12 +79,14 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
                                 this.login();
                             }}>Submit</button>
                         </div>
-                        {errorMessage}
+                        {errorMessage} 
                     </form>
                 </div>
             </div>
-        </React.Fragment>;
+        </>;
     }
 }
 
 export const AuthenticationPanel = withContext<AuthenticationPanelProps>(AuthenticationPanelComponent);
+
+export default AuthenticationPanel;
