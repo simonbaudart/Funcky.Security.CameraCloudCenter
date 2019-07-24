@@ -60,6 +60,7 @@ export class Application extends React.Component<any, ApplicationState>
         {
             return <CameraDetail camera={this.state.context.currentCamera} />;
         }
+        
         return <></>;
     }
 
