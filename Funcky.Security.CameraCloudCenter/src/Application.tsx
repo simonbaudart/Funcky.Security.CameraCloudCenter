@@ -8,7 +8,7 @@ import { Route, Routes } from "./Routing";
 const AuthenticationPanel = React.lazy(() => import(/* webpackChunkName: "AuthenticationPanel" */ "./Components/Login/AuthenticationPanel"));
 
 interface ApplicationState
-{
+{ 
     context: ContextContent;
     cameras: Camera[];
 }
@@ -43,7 +43,7 @@ export class Application extends React.Component<any, ApplicationState>
     public setRoute = (route: string) =>
     {
         window.location.href = `#${route}`;
-        var context = this.state.context;
+        const context = this.state.context;
 
         if (context.route !== route)
         {
@@ -60,12 +60,14 @@ export class Application extends React.Component<any, ApplicationState>
         {
             return <CameraDetail camera={this.state.context.currentCamera} />;
         }
-        return <div></div>;
+        return <></>;
     }
 
     public loadCameras()
     {
-        this.setState({ cameras: [] });
+        const context = this.state.context;
+        context.currentCamera = undefined;
+        this.setState({ cameras: [], context: context });
 
         AjaxService.get<Camera[]>("/api/cameras").then((data) =>
         {
