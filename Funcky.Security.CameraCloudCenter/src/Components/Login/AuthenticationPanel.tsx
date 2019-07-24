@@ -88,3 +88,5 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
 }
 
 export const AuthenticationPanel = withContext<AuthenticationPanelProps>(AuthenticationPanelComponent);
+
+export default AuthenticationPanel;
