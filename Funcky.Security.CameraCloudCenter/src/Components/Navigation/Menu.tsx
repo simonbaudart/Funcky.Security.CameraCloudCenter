@@ -1,8 +1,8 @@
 ﻿import React from 'react';
 
-import { withContext, ContextAwareProps } from "../../Hoc";
-import { Routes } from "../../Routing";
-import { AjaxService } from "../../Services";
+import {withContext, ContextAwareProps} from "../../Hoc";
+import {Routes} from "../../Routing";
+import {AjaxService} from "../../Services";
 
 const MenuComponent = (props: ContextAwareProps) =>
 {
@@ -12,7 +12,7 @@ const MenuComponent = (props: ContextAwareProps) =>
         {
             props.context.setRoute(Routes.login)
         });
-    }
+    };
 
     const getUserLink = () =>
     {
@@ -21,18 +21,21 @@ const MenuComponent = (props: ContextAwareProps) =>
             return <></>;
         }
 
-        return <a className="navbar-text" href="#" onClick={(e) =>
-        {
-            e.preventDefault();
-            logout();
-        }}>
-            Logout
-               </a>;
+        return <li className="nav-item active">
+            <a className="nav-link" href="#" onClick={(e) =>
+            {
+                e.preventDefault();
+                logout();
+            }}>
+                Logout
+            </a></li>;
     };
 
     return <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <a className="navbar-brand" href="#">Camera Cloud Center</a>
-        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+
+        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon">
             </span>
         </button>
@@ -42,12 +45,12 @@ const MenuComponent = (props: ContextAwareProps) =>
                 <li className="nav-item active">
                     <a className="nav-link" href="#">Dashboard</a>
                 </li>
+                {getUserLink()}
             </ul>
         </div>
 
-        {getUserLink()}
 
     </nav>;
-}
+};
 
 export const Menu = withContext<ContextAwareProps>(MenuComponent);

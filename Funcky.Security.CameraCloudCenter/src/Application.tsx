@@ -95,10 +95,10 @@ export class Application extends React.Component<any, ApplicationState>
 
                 <Route path={Routes.dashboard}>
                     <div className="row pb-3">
-                        <div className="col-3">
+                        <div className="col-12 col-lg-3">
                             <CameraList cameras={this.state.cameras}/>
                         </div>
-                        <div className="col-9">
+                        <div className="col-12 col-lg-9">
                             {this.displayCameraDetail()}        
                         </div>
                     </div>
