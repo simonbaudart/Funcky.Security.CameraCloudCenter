@@ -79,7 +79,7 @@ namespace Funcky.Security.CameraCloudCenter
             GlobalConfiguration.Instance = JsonConvert.DeserializeObject<GlobalConfiguration>(File.ReadAllText(configurationFilePath));
 
             this.ConfigureHangfire(app);
-            this.ConfigureSecurity(app);
+            this.ConfigureSecurity(app, env);
             this.ConfigureWeb(app);
         }
 
@@ -135,8 +135,14 @@ namespace Funcky.Security.CameraCloudCenter
         /// Configure all things related to security for the application
         /// </summary>
         /// <param name="app">The application builder used to configure</param>
-        private void ConfigureSecurity(IApplicationBuilder app)
+        /// <param name="env">Then executing environment</param>
+        private void ConfigureSecurity(IApplicationBuilder app, IHostingEnvironment env)
         {
+            if (!env.IsDevelopment())
+            {
+                app.UseHsts(new HstsOptions(TimeSpan.FromDays(30)));
+            }
+            
             app.UseCsp(csp =>
             {
                 csp.ByDefaultAllow.FromSelf();
@@ -151,7 +157,10 @@ namespace Funcky.Security.CameraCloudCenter
                     .From("data:")
                     .From("fonts.gstatic.com");
                 csp.AllowImages.FromSelf()
-                    .From("data:");
+                    .From("data:")
+                    .From("*.blob.core.windows.net");
+                csp.AllowAudioAndVideo.FromSelf()
+                    .From("*.blob.core.windows.net");
             });
         }
 
