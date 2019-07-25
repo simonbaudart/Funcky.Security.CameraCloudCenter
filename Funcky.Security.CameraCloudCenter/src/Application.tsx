@@ -1,14 +1,14 @@
 ﻿import React from "react";
 
-import { Camera, ContextContent } from "./Models";
-import { AjaxService } from "./Services";
-import { CameraDetail, CameraList, ContextProvider, Menu } from "./Components";
-import { Route, Routes } from "./Routing";
+import {Camera, ContextContent} from "./Models";
+import {AjaxService} from "./Services";
+import {CameraDetail, CameraList, ContextProvider, Menu} from "./Components";
+import {Route, Routes} from "./Routing";
 
 const AuthenticationPanel = React.lazy(() => import(/* webpackChunkName: "AuthenticationPanel" */ "./Components/Login/AuthenticationPanel"));
 
 interface ApplicationState
-{ 
+{
     context: ContextContent;
     cameras: Camera[];
 }
@@ -37,7 +37,7 @@ export class Application extends React.Component<any, ApplicationState>
 
     public updateContext(context: ContextContent)
     {
-        this.setState({ context: context });
+        this.setState({context: context});
     }
 
     public setRoute = (route: string) =>
@@ -58,9 +58,9 @@ export class Application extends React.Component<any, ApplicationState>
     {
         if (this.state.context.currentCamera)
         {
-            return <CameraDetail camera={this.state.context.currentCamera} />;
+            return <CameraDetail camera={this.state.context.currentCamera}/>;
         }
-        
+
         return <></>;
     }
 
@@ -68,11 +68,11 @@ export class Application extends React.Component<any, ApplicationState>
     {
         const context = this.state.context;
         context.currentCamera = undefined;
-        this.setState({ cameras: [], context: context });
+        this.setState({cameras: [], context: context});
 
         AjaxService.get<Camera[]>("/api/cameras").then((data) =>
         {
-            this.setState({ cameras: data });
+            this.setState({cameras: data});
         })
             .catch((code: number) =>
             {
@@ -89,19 +89,24 @@ export class Application extends React.Component<any, ApplicationState>
             <div className="container-fluid">
                 <div className="row pb-3">
                     <div className="col">
-                        <Menu />
+                        <Menu/>
                     </div>
                 </div>
 
                 <Route path={Routes.dashboard}>
-                    <CameraList cameras={this.state.cameras} />
-
-                    {this.displayCameraDetail()}
+                    <div className="row pb-3">
+                        <div className="col-12 col-lg-3">
+                            <CameraList cameras={this.state.cameras}/>
+                        </div>
+                        <div className="col-12 col-lg-9">
+                            {this.displayCameraDetail()}        
+                        </div>
+                    </div>
                 </Route>
 
                 <Route path={Routes.login}>
                     <React.Suspense fallback={<div>Loading...</div>}>
-                        <AuthenticationPanel />
+                        <AuthenticationPanel/>
                     </React.Suspense>
                 </Route>
             </div>
