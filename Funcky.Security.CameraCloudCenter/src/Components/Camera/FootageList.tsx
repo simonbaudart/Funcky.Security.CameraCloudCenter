@@ -25,6 +25,31 @@ export class FootageList extends React.Component<FootageListProps, FootageListSt
         this.state = {
             currentFootageIndex: 0
         };
+
+        document.addEventListener('keydown', this.handleKeyDown.bind(this));
+    }
+
+    private handleKeyDown(e)
+    {
+        switch(e.keyCode)
+        {
+            case 37 : //left
+                e.preventDefault();
+                this.navigateFootage(-1);
+                break;
+            case 38 : //up
+                this.props.previousFootage();
+                e.preventDefault();
+                break;
+            case 39 : //right
+                e.preventDefault();
+                this.navigateFootage(1);
+                break;
+            case 40 : //down
+                this.props.nextFootage();
+                e.preventDefault();
+                break;
+        }
     }
 
     componentDidMount()
@@ -55,6 +80,7 @@ export class FootageList extends React.Component<FootageListProps, FootageListSt
     render()
     {
         const currentFootage = this.props.footage.sequences[this.state.currentFootageIndex];
+        // noinspection HtmlUnknownTarget
         let details = <div className="card">
             <img className="card-img-top" src="/img/1280x720.gif" alt="No footage selected"/>
             
@@ -134,22 +160,7 @@ export class FootageList extends React.Component<FootageListProps, FootageListSt
     {
         e.preventDefault();
 
-        const index = this.state.currentFootageIndex + jump;
-
-        if (index < 0)
-        {
-            this.props.previousFootage();
-            return;
-        }
-
-        if (index >= this.props.footage.sequences.length)
-        {
-            this.props.nextFootage();
-            return;
-        }
-        
-        this.setState({currentFootageIndex: index});
-        this.loadCurrentFootage();
+        this.navigateFootage(jump);
     }
 
     private getFootageDetail()
@@ -180,5 +191,25 @@ export class FootageList extends React.Component<FootageListProps, FootageListSt
         }
         
         return content;
+    }
+
+    private navigateFootage(jump: number)
+    {
+        const index = this.state.currentFootageIndex + jump;
+
+        if (index < 0)
+        {
+            this.props.previousFootage();
+            return;
+        }
+
+        if (index >= this.props.footage.sequences.length)
+        {
+            this.props.nextFootage();
+            return;
+        }
+
+        this.setState({currentFootageIndex: index});
+        this.loadCurrentFootage();
     }
 }
