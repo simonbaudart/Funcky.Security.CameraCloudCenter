@@ -53,4 +53,13 @@
     <Folder Include="wwwroot\dist\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\styles\bootstrap.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\styles\bootstrap.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\styles\fontawesome.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\styles\fontawesome.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\styles\mdb.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\styles\mdb.min.css" />
+  </ItemGroup>
+
 </Project>
