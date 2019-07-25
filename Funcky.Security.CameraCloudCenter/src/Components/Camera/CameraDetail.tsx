@@ -87,6 +87,13 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
 
     public render()
     {
+        let footageList = <></>;
+        
+        if (this.state.selectedFootage)
+        {
+            footageList = <FootageList footage={this.state.selectedFootage} cameraName={this.props.camera.key}/>;
+        }
+        
         return <div>
             <div className="row">
                 <div className="col">
@@ -109,7 +116,7 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
 
             <div className="row">
                 <div className="col-12 col-lg-6 m-auto">
-                    <FootageList footage={this.state.selectedFootage} cameraName={this.props.camera.key}/>
+                    {footageList}
                 </div>
             </div>
 
