@@ -6,6 +6,8 @@ interface FootageListProps
 {
     footage: Footage;
     cameraName: string;
+    nextFootage: () => void;
+    previousFootage: () => void;
 }
 
 interface FootageListState
@@ -134,11 +136,18 @@ export class FootageList extends React.Component<FootageListProps, FootageListSt
 
         const index = this.state.currentFootageIndex + jump;
 
-        if (index < 0 || index >= this.props.footage.sequences.length)
+        if (index < 0)
         {
+            this.props.previousFootage();
             return;
         }
 
+        if (index >= this.props.footage.sequences.length)
+        {
+            this.props.nextFootage();
+            return;
+        }
+        
         this.setState({currentFootageIndex: index});
         this.loadCurrentFootage();
     }

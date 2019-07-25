@@ -58,13 +58,13 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
 
         AjaxService.get<any[]>(`api/footages/${camera.key}?date=${date}`).then((footagesEvent: Footage[]) =>
         {
-            let selectedFootage : Footage | undefined = undefined;
-            
+            let selectedFootage: Footage | undefined = undefined;
+
             if (footagesEvent.length > 0)
             {
                 selectedFootage = footagesEvent[0];
             }
-            
+
             this.setState({footages: footagesEvent, selectedFootage: selectedFootage});
         });
     }
@@ -85,15 +85,49 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
         this.setState({selectedFootage: footage});
     }
 
+    private nextFootage()
+    {
+        if (!this.state.selectedFootage)
+        {
+            return;
+        }
+        
+        const currentFootageIndex = this.state.footages.indexOf(this.state.selectedFootage);
+        
+        if (currentFootageIndex < this.state.footages.length -1)
+        {
+            const nextFootage = this.state.footages[currentFootageIndex + 1];
+            this.setState({selectedFootage: nextFootage});    
+        }
+    }
+
+    private previousFootage()
+    {
+        if (!this.state.selectedFootage)
+        {
+            return;
+        }
+
+        const currentFootageIndex = this.state.footages.indexOf(this.state.selectedFootage);
+
+        if (currentFootageIndex >= 1)
+        {
+            const nextFootage = this.state.footages[currentFootageIndex -1];
+            this.setState({selectedFootage: nextFootage});
+        }
+    }
+
     public render()
     {
         let footageList = <></>;
-        
+
         if (this.state.selectedFootage)
         {
-            footageList = <FootageList footage={this.state.selectedFootage} cameraName={this.props.camera.key}/>;
+            footageList = <FootageList footage={this.state.selectedFootage} cameraName={this.props.camera.key}
+                                       previousFootage={() => this.previousFootage()}
+                                       nextFootage={() => this.nextFootage()}/>;
         }
-        
+
         return <div>
             <div className="row">
                 <div className="col">
@@ -137,5 +171,4 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
             </div>
         </div>;
     };
-
 }
