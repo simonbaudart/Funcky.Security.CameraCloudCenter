@@ -227,7 +227,7 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
                 lastFootage.Title = $"{footageName} : {lastFootageCount} footage{(lastFootageCount > 1 ? "s" : string.Empty)} from {lastFootage.FootageDate.ToString("HH:mm:ss", CultureInfo.InvariantCulture)} to {lastFootage.FootageEndDate.ToString("HH:mm:ss", CultureInfo.InvariantCulture)}";
             }
 
-            return combined;
+            return combined.OrderByDescending(x => x.FootageDate).ToList();
         }
 
         /// <summary>

@@ -7,12 +7,13 @@ interface CameraSummaryProps extends ContextAwareProps {
 }
 const CameraSummaryComponent = (props: CameraSummaryProps) => {
 
-    const selectCamera = () =>
+    const selectCamera = (e: React.MouseEvent<HTMLAnchorElement>) =>
     {
-        var ctx = props.context;
+        e.preventDefault();
+        const ctx = props.context;
         ctx.currentCamera = props.camera;
         props.context.updateContext(ctx);
-    }
+    };
 
     return <div className="card mb-3">
         <div className="card-body w-100">
@@ -30,9 +31,9 @@ const CameraSummaryComponent = (props: CameraSummaryProps) => {
                         second: '2-digit'
                     }).format(Date.parse(props.camera.lastFootageDate))}
             </p>
-            <a href="#" className="btn btn-primary w-100" onClick={() => selectCamera()}>Show details</a>
+            <a href="#" className="btn btn-primary w-100" onClick={(e) => selectCamera(e)}>Show details</a>
         </div>
     </div>;
-}
+};
 
 export const CameraSummary = withContext<CameraSummaryProps>(CameraSummaryComponent);

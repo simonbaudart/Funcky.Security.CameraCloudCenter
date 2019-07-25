@@ -1,11 +1,7 @@
 ﻿import React from "react";
 // ReSharper disable once UnusedLocalImport
 import format from 'date-fns/format';
-
-const FullCalendar = React.lazy(() => import(/* webpackChunkName: "FullCalendar" */ "@fullcalendar/react"));
-
-//import FullCalendar from "@fullcalendar/react";
-import listPlugin from "@fullcalendar/list";
+import addDays from 'date-fns/add_days';
 
 import {Camera, Footage} from "../../Models";
 import {AjaxService} from "../../Services";
@@ -20,86 +16,159 @@ interface CameraDetailProps
 interface CameraDetailState
 {
     selectedFootage: Footage | undefined;
+    displayedDate: Date;
+    footages: Footage[];
 }
 
 export class CameraDetail extends React.Component<CameraDetailProps, CameraDetailState>
 {
-    private displayedDate: string;
-    private displayedCamera: string;
-    private footages: Footage[];
-
     constructor(props: CameraDetailProps)
     {
         super(props);
 
         this.state = {
-            selectedFootage: undefined
+            selectedFootage: undefined,
+            displayedDate: new Date(),
+            footages: []
         };
+    }
+
+    componentDidMount(): void
+    {
+        this.loadFootages(this.props.camera, this.state.displayedDate);
     }
 
     componentWillReceiveProps(nextProps: CameraDetailProps)
     {
         if (this.props.camera !== nextProps.camera)
         {
-            this.setState({selectedFootage: undefined});
+            this.setState({
+                selectedFootage: undefined,
+                displayedDate: new Date(),
+                footages: []
+            });
+
+            this.loadFootages(nextProps.camera, new Date());
         }
     }
 
-    public selectFootage(eventClickInfo: any)
+    private loadFootages(camera: Camera, displayedDate: Date)
     {
-        const footage = this.footages.find((current: Footage) =>
+        this.setState({footages: [], selectedFootage: undefined});
+        
+        const date: string = format(displayedDate, 'YYYYMMDD');
+
+        AjaxService.get<any[]>(`api/footages/${camera.key}?date=${date}`).then((footagesEvent: Footage[]) =>
         {
-            return current.id === eventClickInfo.event.id;
+            let selectedFootage: Footage | undefined = undefined;
+
+            if (footagesEvent.length > 0)
+            {
+                selectedFootage = footagesEvent[0];
+            }
+
+            this.setState({footages: footagesEvent, selectedFootage: selectedFootage});
         });
+    }
+
+    private addDays(e: React.MouseEvent<HTMLButtonElement>, amount: number)
+    {
+        e.preventDefault();
+
+        const newDate = addDays(this.state.displayedDate, amount);
+        this.setState({displayedDate: newDate});
+        this.loadFootages(this.props.camera, newDate);
+    }
+
+    private selectFootage(e: React.MouseEvent<HTMLButtonElement>, footage: Footage)
+    {
+        e.preventDefault();
 
         this.setState({selectedFootage: footage});
     }
 
-    public getFootages(info, successCallback, failureCallback)
+    private nextFootage()
     {
-        const startDate: string = info.start;
-        const date: string = format(startDate, 'YYYYMMDD');
+        if (!this.state.selectedFootage)
+        {
+            return;
+        }
+        
+        const currentFootageIndex = this.state.footages.indexOf(this.state.selectedFootage);
+        
+        if (currentFootageIndex < this.state.footages.length -1)
+        {
+            const nextFootage = this.state.footages[currentFootageIndex + 1];
+            this.setState({selectedFootage: nextFootage});    
+        }
+    }
 
-        if (this.props.camera.key === this.displayedCamera && this.displayedDate === date)
+    private previousFootage()
+    {
+        if (!this.state.selectedFootage)
         {
             return;
         }
 
-        AjaxService.get<any[]>(`api/footages/${this.props.camera.key}?date=${date}`).then((footagesEvent: Footage[]) =>
-        {
-            this.footages = footagesEvent;
-            this.displayedDate = date;
-            this.displayedCamera = this.props.camera.key;
+        const currentFootageIndex = this.state.footages.indexOf(this.state.selectedFootage);
 
-            successCallback(footagesEvent);
-        }).catch((ex) =>
+        if (currentFootageIndex >= 1)
         {
-            failureCallback(ex);
-        });
+            const nextFootage = this.state.footages[currentFootageIndex -1];
+            this.setState({selectedFootage: nextFootage});
+        }
     }
 
     public render()
     {
+        let footageList = <></>;
+
+        if (this.state.selectedFootage)
+        {
+            footageList = <FootageList footage={this.state.selectedFootage} cameraName={this.props.camera.key}
+                                       previousFootage={() => this.previousFootage()}
+                                       nextFootage={() => this.nextFootage()}/>;
+        }
+
         return <div>
-            <div className="row pb-3">
+            <div className="row">
                 <div className="col">
                     <h2>{this.props.camera.name}</h2>
                 </div>
             </div>
 
-            <div className="row pb-3">
-                <div className="col-12 col-lg-6 m-auto">
-                    <FootageList footage={this.state.selectedFootage} cameraName={this.props.camera.key}/>
+            <div className="row">
+                <div className="col-12">
+                    <h3>
+                        {format(this.state.displayedDate, 'DD/MM/YYYY')}
+                        <button type="button" className="btn btn-secondary ml-2"
+                                onClick={(e) => this.addDays(e, -1)}>&lt;</button>
+                        <button type="button" className="btn btn-primary"
+                                onClick={(e) => this.addDays(e, 1)}>&gt;</button>
+                    </h3>
+
                 </div>
             </div>
+
+            <div className="row">
+                <div className="col-12 col-lg-6 m-auto">
+                    {footageList}
+                </div>
+            </div>
+
             <div className="row pb-3">
-                <div className="col-12">
-                    <React.Suspense fallback={<div>Loading...</div>}>
-                        <FullCalendar defaultView="list"
-                                      eventClick={(eventClickInfo) => this.selectFootage(eventClickInfo)}
-                                      plugins={[listPlugin]}
-                                      events={(info, successCallback, failureCallback) => this.getFootages(info, successCallback, failureCallback)}/>
-                    </React.Suspense>
+                <div className="list-group">
+                    {
+                        this.state.footages.map((footage) =>
+                        {
+                            return <button key={footage.id} type="button" className={
+                                "list-group-item list-group-item-action " +
+                                (this.state.selectedFootage && this.state.selectedFootage === footage ? "active" : "")
+                            } onClick={(e) => this.selectFootage(e, footage)}>
+                                {footage.title}
+                            </button>
+                        })
+                    }
                 </div>
             </div>
         </div>;
