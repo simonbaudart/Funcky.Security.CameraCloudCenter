@@ -35,7 +35,7 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
 
     componentDidMount(): void
     {
-        this.loadFootages(this.props.camera);
+        this.loadFootages(this.props.camera, this.state.displayedDate);
     }
 
     componentWillReceiveProps(nextProps: CameraDetailProps)
@@ -48,13 +48,13 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
                 footages: []
             });
 
-            this.loadFootages(nextProps.camera);
+            this.loadFootages(nextProps.camera, this.state.displayedDate);
         }
     }
 
-    private loadFootages(camera: Camera)
+    private loadFootages(camera: Camera, displayedDate: Date)
     {
-        const date: string = format(this.state.displayedDate, 'YYYYMMDD');
+        const date: string = format(displayedDate, 'YYYYMMDD');
 
         AjaxService.get<any[]>(`api/footages/${camera.key}?date=${date}`).then((footagesEvent: Footage[]) =>
         {
@@ -75,7 +75,7 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
 
         const newDate = addDays(this.state.displayedDate, amount);
         this.setState({displayedDate: newDate});
-        this.loadFootages(this.props.camera);
+        this.loadFootages(this.props.camera, newDate);
     }
 
     private selectFootage(e: React.MouseEvent<HTMLButtonElement>, footage: Footage)
