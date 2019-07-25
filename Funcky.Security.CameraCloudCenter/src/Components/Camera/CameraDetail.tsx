@@ -52,39 +52,6 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
         }
     }
 
-    /*public selectFootage(eventClickInfo: any)
-    {
-        const footage = this.footages.find((current: Footage) =>
-        {
-            return current.id === eventClickInfo.event.id;
-        });
-
-        this.setState({selectedFootage: footage});
-    }
-
-    public getFootages(info, successCallback, failureCallback)
-    {
-        const startDate: string = info.start;
-        const date: string = format(startDate, 'YYYYMMDD');
-
-        if (this.props.camera.key === this.displayedCamera && this.displayedDate === date)
-        {
-            return;
-        }
-
-        AjaxService.get<any[]>(`api/footages/${this.props.camera.key}?date=${date}`).then((footagesEvent: Footage[]) =>
-        {
-            this.footages = footagesEvent;
-            this.displayedDate = date;
-            this.displayedCamera = this.props.camera.key;
-
-            successCallback(footagesEvent);
-        }).catch((ex) =>
-        {
-            failureCallback(ex);
-        });
-    }*/
-
     private loadFootages(camera: Camera)
     {
         const date: string = format(this.state.displayedDate, 'YYYYMMDD');
