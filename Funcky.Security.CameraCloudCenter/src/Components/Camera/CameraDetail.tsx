@@ -37,6 +37,14 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
         };
     }
 
+    componentWillReceiveProps(nextProps: CameraDetailProps)
+    {
+        if (this.props.camera !== nextProps.camera)
+        {
+            this.setState({selectedFootage: undefined});
+        }
+    }
+
     public selectFootage(eventClickInfo: any)
     {
         const footage = this.footages.find((current: Footage) =>
