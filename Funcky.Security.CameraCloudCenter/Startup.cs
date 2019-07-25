@@ -142,6 +142,12 @@ namespace Funcky.Security.CameraCloudCenter
             {
                 app.UseHsts(new HstsOptions(TimeSpan.FromDays(30)));
             }
+
+            app.UseXFrameOptions(new XFrameOptionsOptions {HeaderValue = XFrameOptionsOptions.XFrameOptionsValues.SameOrigin});
+
+            app.UseXContentTypeOptions(new XContentTypeOptionsOptions {AllowSniffing = false});
+
+            app.UseXXssProtection(new XXssProtectionOptions {EnableProtection = true, EnableAttackBlock = true});
             
             app.UseCsp(csp =>
             {
