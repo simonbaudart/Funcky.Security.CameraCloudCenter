@@ -48,12 +48,14 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
                 footages: []
             });
 
-            this.loadFootages(nextProps.camera, this.state.displayedDate);
+            this.loadFootages(nextProps.camera, new Date());
         }
     }
 
     private loadFootages(camera: Camera, displayedDate: Date)
     {
+        this.setState({footages: [], selectedFootage: undefined});
+        
         const date: string = format(displayedDate, 'YYYYMMDD');
 
         AjaxService.get<any[]>(`api/footages/${camera.key}?date=${date}`).then((footagesEvent: Footage[]) =>

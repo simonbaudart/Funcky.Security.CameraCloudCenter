@@ -34,7 +34,7 @@ export class FootageList extends React.Component<FootageListProps, FootageListSt
 
     componentWillReceiveProps(nextProps: FootageListProps)
     {
-        if (this.props.footage !== nextProps.footage)
+        if (this.props.footage.id !== nextProps.footage.id)
         {
             this.setState({currentFootageIndex: 0, footageUrl: undefined});
             this.loadCurrentFootage();
