@@ -1,4 +1,10 @@
-﻿export interface Footage
+﻿export const FootageTypes =
+    {
+        video: "recording",
+        picture: "snap"
+    };
+
+export interface Footage
 {
     id: string;
     start: string;
@@ -7,4 +13,5 @@
     footageDate: string;
     footageEndDate: string;
     sequences: Footage[];
+    type: string;
 }

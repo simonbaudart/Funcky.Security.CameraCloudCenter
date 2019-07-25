@@ -321,7 +321,8 @@ namespace Funcky.Security.CameraCloudCenter.Core.Providers.AzureStorage
                                           Id = $"{blob.Container.Name}|{blob.Name}",
                                           FootageDate = footageDate,
                                           FootageEndDate = footageDate.AddSeconds(footageDuration),
-                                          Title = $"Footage recorded at {footageDate:yyyy-MM-dd HH:mm:ss}"
+                                          Title = $"Footage recorded at {footageDate:yyyy-MM-dd HH:mm:ss}",
+                                          Type = this.GetContainerType(blob.Name)
                                       };
 
                     footages.Add(footage);

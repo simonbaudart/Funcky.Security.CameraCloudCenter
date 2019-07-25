@@ -1,7 +1,7 @@
 ﻿import React from "react";
-import { Footage } from "../../Models";
+import {Footage, FootageTypes} from "../../Models";
 
-import { FootageDetail } from "../";
+import {FootageListRecording, FootageListSnap} from "../";
 
 export interface FootageListProps
 {
@@ -13,22 +13,14 @@ export const FootageList = (props: FootageListProps) =>
 {
     let content = <></>;
 
-    if (props.footage)
+    if (props.footage && props.footage.type === FootageTypes.video)
     {
-        content = <div>
-            <h3>
-                {props.footage.title}
-            </h3>
-            {
-                props.footage.sequences.map((footage) =>
-                {
-                    return (<div key={footage.id} className="">
-                        <FootageDetail footage={footage} cameraName={props.cameraName} />
-                    </div>);
-                })
-            }
-        </div>;
+        content = <FootageListRecording footage={props.footage} cameraName={props.cameraName} />;
+    }
+    else if (props.footage && props.footage.type === FootageTypes.picture)
+    {
+        content = <FootageListSnap footage={props.footage} cameraName={props.cameraName} />;
     }
 
     return content;
-}
+};
