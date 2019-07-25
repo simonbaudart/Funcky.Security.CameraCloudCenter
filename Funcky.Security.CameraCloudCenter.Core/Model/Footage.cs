@@ -87,5 +87,12 @@ namespace Funcky.Security.CameraCloudCenter.Core.Model
         /// </value>
         [DataMember(Name = "title")]
         public string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the footage.
+        /// </summary>
+        /// <value>The Type.</value>
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
     }
 }
