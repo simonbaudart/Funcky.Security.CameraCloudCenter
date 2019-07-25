@@ -10,7 +10,7 @@ namespace Funcky.Security.CameraCloudCenter.Jobs
     using System.IO;
     using System.Linq;
 
-    using Funcky.Security.CameraCloudCenter.Core.Configuration;
+    using Core.Configuration;
 
     /// <summary>
     /// Class that manage an input of a security camera

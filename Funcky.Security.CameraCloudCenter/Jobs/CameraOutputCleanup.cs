@@ -9,7 +9,7 @@ namespace Funcky.Security.CameraCloudCenter.Jobs
     using System;
     using System.Linq;
 
-    using Funcky.Security.CameraCloudCenter.Core.Configuration;
+    using Core.Configuration;
 
     /// <summary>
     /// Clean each camera output

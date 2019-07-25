@@ -11,8 +11,8 @@ namespace Funcky.Security.CameraCloudCenter.Api
     using System.Security.Claims;
     using System.Threading.Tasks;
 
-    using Funcky.Security.CameraCloudCenter.Core.Configuration;
-    using Funcky.Security.CameraCloudCenter.Core.Model;
+    using Core.Configuration;
+    using Core.Model;
 
     using Isopoh.Cryptography.Argon2;
 

@@ -1,19 +1,10 @@
 /// <binding Clean='clean' />
 "use strict";
 
+// noinspection JSUnresolvedFunction
 var gulp = require("gulp"),
-    sass = require("gulp-sass"),
-    rename = require("gulp-rename"),
-    cssmin = require("gulp-cssnano"),
-    prefix = require("gulp-autoprefixer"),
-    sourcemaps = require("gulp-sourcemaps"),
     gulpWebpack = require("webpack-stream"),
-    watch = require("gulp-watch"),
     clean = require('gulp-clean');
-
-var sassOptions = {
-    outputStyle: "expanded"
-};
 
 gulp.task("clean",
     function ()
@@ -22,8 +13,7 @@ gulp.task("clean",
             .pipe(clean());
     });
 
-gulp.task("react:dev", gulp.series("clean",
-    function ()
+gulp.task("react:dev", function ()
     {
         var config = require('./webpack.config');
         config.mode = 'development';
@@ -31,7 +21,7 @@ gulp.task("react:dev", gulp.series("clean",
         return gulp.src('./src/**/*.ts')
             .pipe(gulpWebpack(config, require('webpack')))
             .pipe(gulp.dest('./wwwroot/dist/'));
-    }));
+    });
 
 gulp.task("react:prod", gulp.series("clean",
     function ()
