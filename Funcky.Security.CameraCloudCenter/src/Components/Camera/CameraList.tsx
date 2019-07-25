@@ -1,19 +1,25 @@
 ﻿import React from "react";
-import { Camera } from "../../Models";
-import { CameraSummary } from "../";
+import {Camera} from "../../Models";
+import {CameraSummary} from "../";
 
-interface CameraListProps {
+interface CameraListProps
+{
     cameras: Camera[];
 }
 
-export const CameraList = (props: CameraListProps) => {
-    return <div className="row pb-3">
+export const CameraList = (props: CameraListProps) =>
+{
+    return <>
         {
-            props.cameras.map((camera) => {
-                return (<div key={camera.key} className="col-12 col-md-6 col-xl-3">
-                    <CameraSummary camera={camera} />
-                </div>);
+            props.cameras.map((camera) =>
+            {
+                return (
+                    <div key={camera.key} className="row pb-3">
+                        <div className="col-12">
+                            <CameraSummary camera={camera}/>
+                        </div>
+                    </div>);
             })
         }
-    </div>;
+    </>;
 };

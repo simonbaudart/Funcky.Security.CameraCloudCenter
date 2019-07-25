@@ -7,10 +7,10 @@ const FullCalendar = React.lazy(() => import(/* webpackChunkName: "FullCalendar"
 //import FullCalendar from "@fullcalendar/react";
 import listPlugin from "@fullcalendar/list";
 
-import { Camera, Footage } from "../../Models";
-import { AjaxService } from "../../Services";
+import {Camera, Footage} from "../../Models";
+import {AjaxService} from "../../Services";
 
-import { FootageList } from "../";
+import {FootageList} from "../";
 
 interface CameraDetailProps
 {
@@ -44,13 +44,13 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
             return current.id === eventClickInfo.event.id;
         });
 
-        this.setState({ selectedFootage: footage });
+        this.setState({selectedFootage: footage});
     }
 
     public getFootages(info, successCallback, failureCallback)
     {
         const startDate: string = info.start;
-        var date: string = format(startDate, "YYYYMMDD"); 
+        const date: string = format(startDate, 'YYYYMMDD');
 
         if (this.props.camera.key === this.displayedCamera && this.displayedDate === date)
         {
@@ -80,13 +80,18 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
             </div>
 
             <div className="row pb-3">
-                <div className="col-12 col-lg-6">
-                    <React.Suspense fallback={<div>Loading...</div>}>
-                        <FullCalendar defaultView="list" eventClick={(eventClickInfo) => this.selectFootage(eventClickInfo)} plugins={[listPlugin]} events={(info, successCallback, failureCallback) => this.getFootages(info, successCallback, failureCallback)} />
-                    </React.Suspense>
+                <div className="col-12 col-lg-6 m-auto">
+                    <FootageList footage={this.state.selectedFootage} cameraName={this.props.camera.key}/>
                 </div>
-                <div className="col-12 col-lg-6">
-                    <FootageList footage={this.state.selectedFootage} cameraName={this.props.camera.key} />
+            </div>
+            <div className="row pb-3">
+                <div className="col-12">
+                    <React.Suspense fallback={<div>Loading...</div>}>
+                        <FullCalendar defaultView="list"
+                                      eventClick={(eventClickInfo) => this.selectFootage(eventClickInfo)}
+                                      plugins={[listPlugin]}
+                                      events={(info, successCallback, failureCallback) => this.getFootages(info, successCallback, failureCallback)}/>
+                    </React.Suspense>
                 </div>
             </div>
         </div>;
