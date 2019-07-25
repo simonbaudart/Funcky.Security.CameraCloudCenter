@@ -1,0 +1,12 @@
+# Request to create a new hash from a password
+# this use the same method as the check from the login
+# you can use the result directly into the config file
+
+POST https://{{host}}/api/login/generate
+Content-Type: application/json
+
+{
+  "password" : "SamplePassword"
+}
+
+###

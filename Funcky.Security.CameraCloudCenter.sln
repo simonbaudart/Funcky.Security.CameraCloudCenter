@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Funcky.Security.CameraCloud
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Funcky.Security.CameraCloudCenter.Core", "Funcky.Security.CameraCloudCenter.Core\Funcky.Security.CameraCloudCenter.Core.csproj", "{6BA42027-F391-48B9-8CC4-E8690F135389}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Funcky.Security.CameraCloudCenter.Tests", "Funcky.Security.CameraCloudCenter.Tests\Funcky.Security.CameraCloudCenter.Tests.csproj", "{D24E3624-59D5-43CF-98C9-F7F5717D4703}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6BA42027-F391-48B9-8CC4-E8690F135389}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BA42027-F391-48B9-8CC4-E8690F135389}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BA42027-F391-48B9-8CC4-E8690F135389}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D24E3624-59D5-43CF-98C9-F7F5717D4703}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D24E3624-59D5-43CF-98C9-F7F5717D4703}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D24E3624-59D5-43CF-98C9-F7F5717D4703}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D24E3624-59D5-43CF-98C9-F7F5717D4703}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
