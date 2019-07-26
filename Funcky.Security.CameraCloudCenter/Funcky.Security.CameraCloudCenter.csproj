@@ -47,7 +47,8 @@
     <TypeScriptCompile Update="src\Services\index.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\Components\Camera\FootageListRecording.tsx" />
+    <TypeScriptCompile Include="src\Containers\CameraPanel.tsx" />
+    <TypeScriptCompile Include="src\Containers\index.tsx" />
   </ItemGroup>
 
   <ItemGroup>

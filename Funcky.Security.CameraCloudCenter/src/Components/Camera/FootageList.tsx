@@ -1,215 +1,137 @@
 import React from "react";
 import {Footage, FootageUrl} from "../../Models";
-import {AjaxService} from "../../Services";
 
 interface FootageListProps
 {
-    footage: Footage;
+    selectedFootage: Footage;
+
+    currentFootage: Footage | undefined;
+    currentFootageUrl: FootageUrl | undefined;
+    currentFootageIndex: number | undefined;
+
     cameraName: string;
+    moveFootage: (jump: number) => void;
     nextFootage: () => void;
     previousFootage: () => void;
 }
 
-interface FootageListState
+export const FootageList = (props: FootageListProps) =>
 {
-    currentFootageIndex: number;
-    footageUrl?: FootageUrl;
-}
 
-export class FootageList extends React.Component<FootageListProps, FootageListState>
-{
-    constructor(props: FootageListProps)
+    const displayFootageDetails = () =>
     {
-        super(props);
+        let content = <></>;
 
-        this.state = {
-            currentFootageIndex: 0
-        };
-
-        document.addEventListener('keydown', this.handleKeyDown.bind(this));
-    }
-
-    private handleKeyDown(e)
-    {
-        switch(e.keyCode)
+        if (!props.currentFootageUrl || !props.currentFootageIndex || !props.currentFootage)
         {
-            case 37 : //left
-                e.preventDefault();
-                this.navigateFootage(-1);
+            return content;
+        }
+
+        switch (props.currentFootageUrl.type)
+        {
+            case "snap":
+                content = <img className="w-100 card-img-top" src={props.currentFootageUrl.url}
+                               alt={props.selectedFootage.title}/>;
                 break;
-            case 38 : //up
-                this.props.previousFootage();
-                e.preventDefault();
+            case "recording":
+                content = <div>
+                    <video className="w-100" src={props.currentFootageUrl.url} autoPlay controls
+                           onError={(error: any) => console.log(error.target.error)}>
+                    </video>
+                    <a href={props.currentFootageUrl.url}>{props.selectedFootage.title}</a>
+                </div>;
                 break;
-            case 39 : //right
-                e.preventDefault();
-                this.navigateFootage(1);
-                break;
-            case 40 : //down
-                this.props.nextFootage();
-                e.preventDefault();
+            default:
+                content = <div>{props.currentFootageUrl.url}</div>;
                 break;
         }
-    }
 
-    componentDidMount()
-    {
-        this.loadCurrentFootage(); 
-    }
+        return content;
+    };
 
-    componentWillReceiveProps(nextProps: FootageListProps)
+    const displayDetails = () =>
     {
-        if (this.props.footage.id !== nextProps.footage.id)
+        let footageNavigation = <></>;
+
+        if (!props.currentFootageUrl || !props.currentFootageIndex || !props.currentFootage)
         {
-            this.setState({currentFootageIndex: 0, footageUrl: undefined});
-            this.loadCurrentFootage();
+            return footageNavigation;
         }
-    }
-
-    private loadCurrentFootage()
-    {
-        const currentFootage = this.props.footage.sequences[this.state.currentFootageIndex];
-        AjaxService.get('api/footage/' + this.props.cameraName + '?id=' + currentFootage.id).then((data: FootageUrl) =>
-        {
-            this.setState({
-                footageUrl: data
-            });
-        });
-    }
-
-    render()
-    {
-        const currentFootage = this.props.footage.sequences[this.state.currentFootageIndex];
-        // noinspection HtmlUnknownTarget
+        
+        footageNavigation = <div className="row">
+            <div className="col-6">
+                <button type="button" className="btn btn-secondary w-100 p-2"
+                        onClick={(e) =>
+                        {
+                            e.preventDefault();
+                            props.moveFootage(-1);
+                        }}>Previous
+                </button>
+            </div>
+            <div className="col-6">
+                <button type="button" className="btn btn-primary w-100 p-2"
+                        onClick={(e) =>
+                        {
+                            e.preventDefault();
+                            props.moveFootage(1);
+                        }}>Next
+                </button>
+            </div>
+        </div>;
+        
         let details = <div className="card">
             <img className="card-img-top" src="/img/1280x720.gif" alt="No footage selected"/>
-            
-            {this.getFootageDetail()}
-            
+
             <div className="card-body">
                 <div>
                         <span className="badge badge-primary">
-                            {this.state.currentFootageIndex + 1} / {this.props.footage.sequences.length}
+                            {props.currentFootageIndex + 1} / {props.selectedFootage.sequences.length}
                         </span>
                 </div>
                 <div>
                     <b>
-                        {currentFootage.title}
+                        {props.currentFootage.title}
                     </b>
                 </div>
-                <div className="row">
-                    <div className="col-6">
-                        <button type="button" className="btn btn-secondary w-100 p-2"
-                                onClick={(e) => this.moveFootage(e, -1)}>Previous
-                        </button>
-                    </div>
-                    <div className="col-6">
-                        <button type="button" className="btn btn-primary w-100 p-2"
-                                onClick={(e) => this.moveFootage(e, 1)}>Next
-                        </button>
-                    </div>
-                </div>
+
+                {footageNavigation}
             </div>
         </div>;
 
-        if (this.state.footageUrl)
+        if (props.currentFootageUrl)
         {
             details = <div className="card">
-                <img className="card-img-top" src={this.state.footageUrl.url} alt={currentFootage.title}/>
+
+                {displayFootageDetails}
+
                 <div className="card-body">
                     <div>
                         <span className="badge badge-primary">
-                            {this.state.currentFootageIndex + 1} / {this.props.footage.sequences.length}
+                            {props.currentFootageIndex + 1} / {props.selectedFootage.sequences.length}
                         </span>
                     </div>
                     <div>
                         <b>
-                            {currentFootage.title}
+                            {props.currentFootage.title}
                         </b>
                     </div>
-                    <div className="row">
-                        <div className="col-6">
-                            <button type="button" className="btn btn-secondary w-100 p-2"
-                                    onClick={(e) => this.moveFootage(e, -1)}>Previous
-                            </button>
-                        </div>
-                        <div className="col-6">
-                            <button type="button" className="btn btn-primary w-100 p-2"
-                                    onClick={(e) => this.moveFootage(e, 1)}>Next
-                            </button>
-                        </div>
-                    </div>
+
+                    {footageNavigation}
                 </div>
             </div>;
         }
 
-        return <>
-            <div>
-                <h3>
-                    {this.props.footage.title}
-                </h3>
+        return details;
+    };
 
-                {details}
+    return <>
+        <div>
+            <h3>
+                {props.selectedFootage.title}
+            </h3>
 
+            {displayDetails}
 
-            </div>
-        </>;
-    }
-
-    private moveFootage(e: React.MouseEvent<HTMLButtonElement>, jump: number)
-    {
-        e.preventDefault();
-
-        this.navigateFootage(jump);
-    }
-
-    private getFootageDetail()
-    {
-        let content = <></>;
-        
-        if (!this.state.footageUrl)
-        {
-            return content;
-        }
-        
-        switch (this.state.footageUrl.type)
-        {
-            case "snap":
-                content = <img className="w-100" src={this.state.footageUrl.url} alt={this.props.footage.title}/>;
-                break;
-            case "recording":
-                content = <div>
-                    <video className="w-100" src={this.state.footageUrl.url} autoPlay controls
-                           onError={(error: any) => console.log(error.target.error)}>
-                    </video>
-                    <a href={this.state.footageUrl.url}>{this.props.footage.title}</a>
-                </div>;
-                break;
-            default:
-                content = <div>{this.state.footageUrl.url}</div>;
-                break;
-        }
-        
-        return content;
-    }
-
-    private navigateFootage(jump: number)
-    {
-        const index = this.state.currentFootageIndex + jump;
-
-        if (index < 0)
-        {
-            this.props.previousFootage();
-            return;
-        }
-
-        if (index >= this.props.footage.sequences.length)
-        {
-            this.props.nextFootage();
-            return;
-        }
-
-        this.setState({currentFootageIndex: index});
-        this.loadCurrentFootage();
-    }
-}
+        </div>
+    </>
+};
