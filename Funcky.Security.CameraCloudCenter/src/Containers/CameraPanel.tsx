@@ -37,11 +37,36 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
             footages: [],
             displayedDate: new Date()
         };
+
+        document.addEventListener('keydown', this.handleKeyDown.bind(this));
     }
 
     componentDidMount()
     {
         this.loadCameras();
+    }
+
+    private handleKeyDown(e)
+    {
+        switch(e.keyCode)
+        {
+            case 37 : //left
+                e.preventDefault();
+                this.jumpSequence(-1);
+                break;
+            case 38 : //up
+                this.jumpFootage(-1);
+                e.preventDefault();
+                break;
+            case 39 : //right
+                e.preventDefault();
+                this.jumpSequence(1);
+                break;
+            case 40 : //down
+                this.jumpFootage(1);
+                e.preventDefault();
+                break;
+        }
     }
 
     private loadCameras()
