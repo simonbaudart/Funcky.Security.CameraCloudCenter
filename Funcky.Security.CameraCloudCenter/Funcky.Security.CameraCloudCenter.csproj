@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName />
-    <PackageVersion>2.2.0</PackageVersion>
+    <PackageVersion>2.3.0</PackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -47,7 +47,8 @@
     <TypeScriptCompile Update="src\Services\index.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\Components\Camera\FootageListRecording.tsx" />
+    <TypeScriptCompile Include="src\Containers\CameraPanel.tsx" />
+    <TypeScriptCompile Include="src\Containers\index.tsx" />
   </ItemGroup>
 
   <ItemGroup>
