@@ -48,7 +48,7 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
             password: this.state.password
         };
 
-        schema.validate(data).then(() =>
+        schema.validate(data, {abortEarly: false}).then(() =>
         {
             AjaxService.postNoReturn("api/login", data).then(() =>
             {
@@ -73,7 +73,11 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
             </div>
             <div className="row">
                 <div className="col-12 col-md-6 col-lg-4 mx-auto">
-                    <form>
+                    <form onSubmit={async (e) =>
+                    {
+                        e.preventDefault();
+                        await this.login();
+                    }}>
                         <div className="form-group">
                             <label htmlFor="email" className="bmd-label-floating">Email address</label>
                             <input type="email" className="form-control" id="email"
@@ -110,7 +114,7 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
                 Your credentials are invalid, please try again.
             </div>;
         }
-        
+
         return errorMessage;
     }
 
@@ -124,7 +128,8 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
                 Please check the data :
                 <ul>
                     {
-                        this.state.validationErrors.map((error, i) => {
+                        this.state.validationErrors.map((error, i) =>
+                        {
                             return <li key={i}>
                                 {error}
                             </li>;
