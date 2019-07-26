@@ -4,52 +4,50 @@ import format from 'date-fns/format';
 
 import {Camera, Footage, FootageUrl} from "../../Models";
 
-import {FootageList} from "../";
+import {SequencesList} from "../";
 
 interface CameraDetailProps
 {
-    camera: Camera;
+    currentCamera: Camera;
     displayedDate: Date;
 
     footages: Footage[];
-    selectedFootage? : Footage;
+    currentFootage?: Footage;
 
-    currentFootage: Footage | undefined;
-    currentFootageUrl: FootageUrl | undefined;
-    currentFootageIndex: number | undefined;
+    currentSequence: Footage | undefined;
+    currentSequenceUrl: FootageUrl | undefined;
+    currentSequenceIndex: number | undefined;
 
-    addDays: (jump: number) => void;
-    selectFootage: (footage: Footage) => void;
-    moveFootage: (jump: number) => void;
-    previousFootage: () => void;
-    nextFootage: () => void;
+    jumpDays: (jump: number) => void;
+    selectFootage: (footage: Footage, sequenceIndex: 0) => void;
+
+    jumpSequence: (jump: number) => void;
 }
 
-export const CameraDetail = (props: CameraDetailProps) => {
+export const CameraDetail = (props: CameraDetailProps) =>
+{
 
-    const displayFootageList = () => {
+    const displaySequencesList = () =>
+    {
         let footageList = <></>;
 
-        if (props.selectedFootage)
+        if (props.currentFootage && props.currentSequence && props.currentSequenceUrl && (props.currentSequenceIndex || props.currentSequenceIndex === 0))
         {
-            footageList = <FootageList selectedFootage={props.selectedFootage} 
-                                       cameraName={props.camera.key}
-                                       previousFootage={props.previousFootage}
-                                       nextFootage={props.nextFootage}
-                                       currentFootage={props.currentFootage}
-                                       currentFootageIndex={props.currentFootageIndex}
-                                       currentFootageUrl={props.currentFootageUrl}
-                                       moveFootage={props.moveFootage}
+            footageList = <SequencesList currentFootage={props.currentFootage}
+                                         currentSequence={props.currentSequence}
+                                         currentSequenceUrl={props.currentSequenceUrl}
+                                         currentSequenceIndex={props.currentSequenceIndex}
+                                         jumpSequence={props.jumpSequence}
             />;
         }
-        
+
         return footageList;
     };
-    
+
     return <div>
         <div className="row">
             <div className="col">
-                <h2>{props.camera.name}</h2>
+                <h2>{props.currentCamera.name}</h2>
             </div>
         </div>
 
@@ -58,9 +56,17 @@ export const CameraDetail = (props: CameraDetailProps) => {
                 <h3>
                     {format(props.displayedDate, 'DD/MM/YYYY')}
                     <button type="button" className="btn btn-secondary ml-2"
-                            onClick={(e) =>{e.preventDefault(); props.addDays(-1);}}>&lt;</button>
+                            onClick={(e) =>
+                            {
+                                e.preventDefault();
+                                props.jumpDays(-1);
+                            }}>&lt;</button>
                     <button type="button" className="btn btn-primary"
-                            onClick={(e) => {e.preventDefault(); props.addDays(1);}}>&gt;</button>
+                            onClick={(e) =>
+                            {
+                                e.preventDefault();
+                                props.jumpDays(1);
+                            }}>&gt;</button>
                 </h3>
 
             </div>
@@ -68,7 +74,7 @@ export const CameraDetail = (props: CameraDetailProps) => {
 
         <div className="row">
             <div className="col-12 col-lg-6 m-auto">
-                {displayFootageList()}
+                {displaySequencesList()}
             </div>
         </div>
 
@@ -79,8 +85,12 @@ export const CameraDetail = (props: CameraDetailProps) => {
                     {
                         return <button key={footage.id} type="button" className={
                             "list-group-item list-group-item-action " +
-                            (props.selectedFootage && props.selectedFootage === footage ? "active" : "")
-                        } onClick={(e) => {e.preventDefault(); props.selectFootage(footage)}}>
+                            (props.currentFootage && props.currentFootage === footage ? "active" : "")
+                        } onClick={(e) =>
+                        {
+                            e.preventDefault();
+                            props.selectFootage(footage, 0)
+                        }}>
                             {footage.title}
                         </button>
                     })

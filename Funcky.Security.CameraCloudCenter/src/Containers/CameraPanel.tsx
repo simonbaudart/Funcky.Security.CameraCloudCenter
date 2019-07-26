@@ -13,19 +13,17 @@ interface CameraPanelProps extends ContextAwareProps
 
 interface CameraPanelState
 {
-    cameras: Camera[];
-
-    currentCamera?: Camera;
-
     displayedDate: Date;
 
+    cameras: Camera[];
+    currentCamera?: Camera;
+
     footages: Footage[];
-
-    selectedFootage?: Footage;
-
     currentFootage?: Footage;
-    currentFootageIndex?: number;
-    currentFootageUrl?: FootageUrl;
+
+    currentSequence?: Footage;
+    currentSequenceIndex?: number;
+    currentSequenceUrl?: FootageUrl;
 }
 
 class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanelState>
@@ -37,46 +35,13 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
         this.state = {
             cameras: [],
             footages: [],
-            displayedDate: new Date(),
-            currentFootageIndex: 0
+            displayedDate: new Date()
         };
     }
 
     componentDidMount()
     {
         this.loadCameras();
-    }
-
-    private previousFootage()
-    {
-        if (!this.state.selectedFootage)
-        {
-            return;
-        }
-
-        const currentFootageIndex = this.state.footages.indexOf(this.state.selectedFootage);
-
-        if (currentFootageIndex >= 1)
-        {
-            const nextFootage = this.state.footages[currentFootageIndex - 1];
-            this.setState({selectedFootage: nextFootage});
-        }
-    }
-
-    private nextFootage()
-    {
-        if (!this.state.selectedFootage)
-        {
-            return;
-        }
-
-        const currentFootageIndex = this.state.footages.indexOf(this.state.selectedFootage);
-
-        if (currentFootageIndex < this.state.footages.length - 1)
-        {
-            const nextFootage = this.state.footages[currentFootageIndex + 1];
-            this.setState({selectedFootage: nextFootage});
-        }
     }
 
     private loadCameras()
@@ -99,86 +64,139 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
     private selectCamera(camera: Camera)
     {
         this.setState({currentCamera: camera});
+        this.loadFootages(camera, this.state.displayedDate);
     }
 
-    private selectFootage(footage: Footage)
+    private jumpDays(jump: number)
     {
-        this.setState({selectedFootage: footage});
-    }
-
-    private loadFootages()
-    {
-        this.setState({footages: [], selectedFootage: undefined});
-
-        const date: string = format(this.state.displayedDate, 'YYYYMMDD');
-
         if (!this.state.currentCamera)
         {
             return;
         }
 
-        AjaxService.get<any[]>(`api/footages/${this.state.currentCamera.key}?date=${date}`).then((footagesEvent: Footage[]) =>
+        const newDate = addDays(this.state.displayedDate, jump);
+        this.setState({displayedDate: newDate});
+
+        this.loadFootages(this.state.currentCamera, newDate);
+    }
+
+    private loadFootages(camera: Camera, date: Date)
+    {
+        this.setState({footages: [], currentFootage: undefined});
+
+        const formattedDate: string = format(date, 'YYYYMMDD');
+
+        AjaxService.get<any[]>(`api/footages/${camera.key}?date=${formattedDate}`).then((footagesEvent: Footage[]) =>
         {
-            let selectedFootage: Footage | undefined = undefined;
+            let firstFootage: Footage | undefined = undefined;
 
             if (footagesEvent.length > 0)
             {
-                selectedFootage = footagesEvent[0];
+                firstFootage = footagesEvent[0];
             }
 
-            this.setState({footages: footagesEvent, selectedFootage: selectedFootage});
+            this.setState({footages: footagesEvent, currentFootage: firstFootage});
+
+            if (firstFootage)
+            {
+                this.loadSequence(camera, firstFootage, 0);
+            }
         });
     }
 
-    private addDays(jump: number)
+    private previousFootage()
     {
-        const newDate = addDays(this.state.displayedDate, jump);
-        this.setState({displayedDate: newDate});
-        this.loadFootages();
+        this.jumpFootage(-1);
     }
 
-    private moveFootage(jump: number)
+    private nextFootage()
     {
-        this.navigateFootage(jump);
+        this.jumpFootage(1);
     }
 
-    private navigateFootage(jump: number)
+    private jumpFootage(jump: number)
     {
-        if (!this.state.selectedFootage || !this.state.currentFootageIndex)
+        if (!this.state.currentFootage)
         {
             return;
         }
-        
-        const index = this.state.currentFootageIndex + jump;
 
-        if (index < 0)
+        const currentFootageIndex = this.state.footages.indexOf(this.state.currentFootage);
+        const newFootageIndex = currentFootageIndex + jump;
+        
+        if (newFootageIndex < 0 || newFootageIndex >= this.state.footages.length)
+        {
+            return;
+        }
+
+        const newFootage = this.state.footages[newFootageIndex];
+        const newSequenceIndex = jump > 0 ? 0 : newFootage.sequences.length - 1;
+        
+        this.selectFootage(newFootage, newSequenceIndex);
+    }
+
+    private selectFootage(footage: Footage, sequenceIndex: number)
+    {
+        if (!this.state.currentCamera)
+        {
+            return;
+        }
+
+        this.setState({currentFootage: footage});
+        this.loadSequence(this.state.currentCamera, footage, sequenceIndex);
+    }
+
+    private jumpSequence(jump: number)
+    {
+        if (!this.state.currentCamera || !this.state.currentFootage)
+        {
+            return;
+        }
+
+        let currentSequenceIndex = 0;
+
+        if (this.state.currentSequenceIndex)
+        {
+            currentSequenceIndex = this.state.currentSequenceIndex;
+        }
+
+        const newSequenceIndex = currentSequenceIndex + jump;
+
+        if (newSequenceIndex < 0)
         {
             this.previousFootage();
             return;
         }
 
-        if (index >= this.state.selectedFootage.sequences.length)
+        if (newSequenceIndex >= this.state.currentFootage.sequences.length)
         {
             this.nextFootage();
             return;
         }
 
-        this.setState({currentFootageIndex: index});
-        this.loadCurrentFootage();
+        this.loadSequence(this.state.currentCamera, this.state.currentFootage, newSequenceIndex);
     }
 
-    private loadCurrentFootage()
+    private loadSequence(camera: Camera, footage: Footage, sequenceIndex: number)
     {
-        if (!this.state.selectedFootage || !this.state.currentCamera || !this.state.currentFootageIndex)
-        {
-            return;
-        }
-        
-        const currentFootage = this.state.selectedFootage.sequences[this.state.currentFootageIndex];
-        AjaxService.get('api/footage/' + this.state.currentCamera.key + '?id=' + currentFootage.id).then((data: FootageUrl) =>
+        if (sequenceIndex < 0 || sequenceIndex > footage.sequences.length)
         {
             this.setState({
-                currentFootageUrl: data
+                currentSequence: undefined,
+                currentSequenceIndex: undefined,
+                currentSequenceUrl: undefined
+            });
+
+            return;
+        }
+
+        const currentFootage = footage.sequences[sequenceIndex];
+        AjaxService.get('api/footage/' + camera.key + '?id=' + currentFootage.id).then((data: FootageUrl) =>
+        {
+            this.setState({
+                currentSequence: footage.sequences[sequenceIndex],
+                currentSequenceIndex: sequenceIndex,
+                currentSequenceUrl: data
             });
         });
     }
@@ -187,17 +205,19 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
     {
         if (this.state.currentCamera)
         {
-            return <CameraDetail camera={this.state.currentCamera}
+            return <CameraDetail currentCamera={this.state.currentCamera}
                                  displayedDate={this.state.displayedDate}
                                  footages={this.state.footages}
-                                 previousFootage={this.previousFootage.bind(this)}
-                                 nextFootage={this.nextFootage.bind(this)}
-                                 addDays={this.addDays.bind(this)}
-                                 selectFootage={this.selectFootage.bind(this)}
-                                 moveFootage={this.moveFootage.bind(this)}
+
                                  currentFootage={this.state.currentFootage}
-                                 currentFootageUrl={this.state.currentFootageUrl}
-                                 currentFootageIndex={this.state.currentFootageIndex}
+                                 
+                                 currentSequence={this.state.currentSequence}
+                                 currentSequenceUrl={this.state.currentSequenceUrl}
+                                 currentSequenceIndex={this.state.currentSequenceIndex}
+
+                                 jumpDays={this.jumpDays.bind(this)}
+                                 selectFootage={this.selectFootage.bind(this)}
+                                 jumpSequence={this.jumpSequence.bind(this)}
             />;
         }
 
