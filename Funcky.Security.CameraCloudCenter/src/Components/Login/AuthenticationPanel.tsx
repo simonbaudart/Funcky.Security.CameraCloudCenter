@@ -14,6 +14,7 @@ interface AuthenticationPanelState
     password?: string;
     credentialsError: boolean;
     validationErrors: string[];
+    loginInProgress: boolean;
 }
 
 class AuthenticationPanelComponent extends React.Component<AuthenticationPanelProps, AuthenticationPanelState>
@@ -24,8 +25,10 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
 
         this.state = {
             credentialsError: false,
-            validationErrors: []
-        };
+            validationErrors: [],
+            loginInProgress: false
+        }
+        ;
     }
 
     public componentDidMount()
@@ -34,7 +37,7 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
 
     public async login()
     {
-        this.setState({credentialsError: false, validationErrors: []});
+        this.setState({credentialsError: false, validationErrors: [], loginInProgress: true});
 
         const yup = await import(/* webpackChunkName: "yup" */  'yup');
 
@@ -53,13 +56,14 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
             AjaxService.postNoReturn("api/login", data).then(() =>
             {
                 this.props.context.setRoute(Routes.dashboard);
+                this.setState({loginInProgress: false});
             }).catch(() =>
             {
-                this.setState({credentialsError: true});
-            });
+                this.setState({credentialsError: true, loginInProgress: false});
+            })
         }).catch((validationError) =>
         {
-            this.setState({validationErrors: validationError.errors});
+            this.setState({validationErrors: validationError.errors, loginInProgress: false});
         });
     }
 
@@ -89,7 +93,8 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
                                    onChange={(e) => this.setState({password: e.target.value})}/>
                         </div>
                         <div className="form-group text-right">
-                            <button type="submit" className="btn btn-primary btn-raised" onClick={async (e) =>
+                            <button type="submit" className="btn btn-primary btn-raised"
+                                    disabled={this.state.loginInProgress} onClick={async (e) =>
                             {
                                 e.preventDefault();
                                 await this.login();
