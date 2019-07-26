@@ -1,9 +1,7 @@
 ﻿export * from "./Camera/CameraDetail";
 export * from "./Camera/CameraList";
 export * from "./Camera/CameraSummary";
-export * from "./Camera/FootageList";
-
-export * from "./Login/AuthenticationPanel";
+export * from "./Camera/SequencesList";
 
 export * from "./Navigation/Menu";
 

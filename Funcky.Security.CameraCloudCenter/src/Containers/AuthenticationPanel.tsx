@@ -1,8 +1,8 @@
 ﻿import React from "react";
 
-import {AjaxService} from "../../Services";
-import {ContextAwareProps, withContext} from "../../Hoc";
-import {Routes} from "../../Routing";
+import {AjaxService} from "../Services";
+import {ContextAwareProps, withContext} from "../Hoc";
+import {Routes} from "../Routing";
 
 interface AuthenticationPanelProps extends ContextAwareProps
 {

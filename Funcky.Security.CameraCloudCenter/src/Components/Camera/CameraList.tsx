@@ -5,6 +5,7 @@ import {CameraSummary} from "../";
 interface CameraListProps
 {
     cameras: Camera[];
+    selectCamera: (camera: Camera) => void;
 }
 
 export const CameraList = (props: CameraListProps) =>
@@ -16,7 +17,7 @@ export const CameraList = (props: CameraListProps) =>
                 return (
                     <div key={camera.key} className="row pb-3">
                         <div className="col-12">
-                            <CameraSummary camera={camera}/>
+                            <CameraSummary camera={camera} selectCamera={props.selectCamera}/>
                         </div>
                     </div>);
             })
