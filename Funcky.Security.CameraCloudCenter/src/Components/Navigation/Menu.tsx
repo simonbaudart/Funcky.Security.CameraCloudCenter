@@ -3,6 +3,7 @@
 import {withContext, ContextAwareProps} from "../../Hoc";
 import {Routes} from "../../Routing";
 import {AjaxService} from "../../Services";
+import {Actions, AppDispatcher} from "../../Flux";
 
 const MenuComponent = (props: ContextAwareProps) =>
 {
@@ -10,7 +11,9 @@ const MenuComponent = (props: ContextAwareProps) =>
     {
         AjaxService.postNoData('api/logout').then(() =>
         {
-            props.context.setRoute(Routes.login)
+            AppDispatcher.dispatch({
+                actionType: Actions.LogoutSuccess
+            })
         });
     };
 

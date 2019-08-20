@@ -1,11 +1,13 @@
 import React from "react";
+import {addDays, format} from "date-fns";
+
 import {CameraDetail, CameraList} from "../Components";
 import {Camera, Footage, FootageUrl} from "../Models";
 import {AjaxService} from "../Services";
 import {Routes} from "../Routing";
 import {ContextAwareProps, withContext} from "../Hoc";
+import {Actions, AppDispatcher} from "../Flux";
 
-import {addDays, format} from "date-fns";
 
 interface CameraPanelProps extends ContextAwareProps
 {
@@ -44,8 +46,19 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
     componentDidMount()
     {
         this.loadCameras();
+        
+        AppDispatcher.register((payload) => {
+            
+            switch (payload.actionType)
+            {
+                case Actions.LogoutSuccess:
+                case Actions.LoginSuccess:
+                    this.loadCameras();
+                    break;
+            }
+        });
     }
-
+    
     private handleKeyDown(e)
     {
         switch(e.keyCode)

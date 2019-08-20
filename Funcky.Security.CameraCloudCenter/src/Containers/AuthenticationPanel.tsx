@@ -4,6 +4,8 @@ import {AjaxService} from "../Services";
 import {ContextAwareProps, withContext} from "../Hoc";
 import {Routes} from "../Routing";
 
+import {Actions, AppDispatcher} from "../Flux";
+
 interface AuthenticationPanelProps extends ContextAwareProps
 {
 }
@@ -27,8 +29,7 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
             credentialsError: false,
             validationErrors: [],
             loginInProgress: false
-        }
-        ;
+        };
     }
 
     public componentDidMount()
@@ -57,6 +58,11 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
             {
                 this.props.context.setRoute(Routes.dashboard);
                 this.setState({loginInProgress: false});
+                
+                AppDispatcher.dispatch({
+                    actionType: Actions.LoginSuccess,
+                    data: data.login 
+                });
             }).catch(() =>
             {
                 this.setState({credentialsError: true, loginInProgress: false});
