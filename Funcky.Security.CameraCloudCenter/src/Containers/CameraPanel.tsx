@@ -1,27 +1,16 @@
 import React from "react";
 
 import { CameraDetail, CameraList } from "../Components";
-import { ContextAwareProps, withContext } from "../Hoc";
 
-interface CameraPanelProps extends ContextAwareProps
+interface CameraPanelProps
 {
 }
 
 interface CameraPanelState
 {
-    /*displayedDate: Date;
-
-    currentCamera?: Camera;
-
-    footages: Footage[];
-    currentFootage?: Footage;
-
-    currentSequence?: Footage;
-    currentSequenceIndex?: number;
-    currentSequenceUrl?: FootageUrl;*/
 }
 
-class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanelState>
+export class CameraPanel extends React.Component<CameraPanelProps, CameraPanelState>
 {
     /*constructor(props: CameraPanelProps)
     {
@@ -206,5 +195,3 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
         </>;
     }
 }
-
-export const CameraPanel = withContext<CameraPanelProps>(CameraPanelComponent);

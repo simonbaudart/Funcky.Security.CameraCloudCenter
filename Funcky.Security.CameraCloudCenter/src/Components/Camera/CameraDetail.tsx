@@ -7,6 +7,8 @@ import { Camera, Footage } from "../../Models";
 import Events from "../../Stores/Events";
 import CameraStore from "../../Stores/CameraStore";
 
+import { SequencesList } from "./SequencesList";
+
 interface CameraDetailProps
 {
 }
@@ -26,7 +28,7 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
     {
         super(props);
 
-        var content = CameraStore.getContent();
+        const content = CameraStore.getContent();
 
         this.state = {
             displayedDate: content.displayedDate,
@@ -53,23 +55,6 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
             currentFootage: content.currentFootage
         });
     }
-
-    /*const displaySequencesList = () =>
-    {
-        let footageList = <></>;
-
-        if (props.currentFootage && props.currentSequence && props.currentSequenceUrl && (props.currentSequenceIndex || props.currentSequenceIndex === 0))
-        {
-            footageList = <SequencesList currentFootage={props.currentFootage}
-                                         currentSequence={props.currentSequence}
-                                         currentSequenceUrl={props.currentSequenceUrl}
-                                         currentSequenceIndex={props.currentSequenceIndex}
-                                         jumpSequence={props.jumpSequence}
-            />;
-        }
-
-        return footageList;
-    };*/
 
     render()
     {
@@ -108,7 +93,7 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
 
             <div className="row">
                 <div className="col-12 col-lg-6 m-auto">
-                    {/* TODO displaySequencesList() */}
+                    <SequencesList />
                 </div>
             </div>
 

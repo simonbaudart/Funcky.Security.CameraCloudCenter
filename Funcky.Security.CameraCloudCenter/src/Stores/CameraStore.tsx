@@ -23,7 +23,7 @@ interface CameraContent
     currentFootage: Footage | null;
 
     currentSequence: Footage | null;
-    currentSequenceIndex: number | null;
+    currentSequenceIndex: number;
     currentSequenceUrl: FootageUrl | null;
 }
 
@@ -44,7 +44,7 @@ class CameraStore extends EventEmitter
             currentFootage: null,
 
             currentSequence: null,
-            currentSequenceIndex: null,
+            currentSequenceIndex: 0,
             currentSequenceUrl: null
         };
 
@@ -86,7 +86,7 @@ class CameraStore extends EventEmitter
             this.content.footages = null;
             this.content.currentFootage = null;
             this.content.currentSequence = null;
-            this.content.currentSequenceIndex = null;
+            this.content.currentSequenceIndex = 0;
             this.content.currentSequenceUrl = null;
 
             this.emit(Events.CameraListLoaded);
@@ -113,7 +113,7 @@ class CameraStore extends EventEmitter
         this.content.footages = null;
         this.content.currentFootage = null;
         this.content.currentSequence = null;
-        this.content.currentSequenceIndex = null;
+        this.content.currentSequenceIndex = 0;
         this.content.currentSequenceUrl = null;
 
         const formattedDate: string = format(date, 'YYYYMMDD');
@@ -142,7 +142,7 @@ class CameraStore extends EventEmitter
     private loadSequence(camera: Camera, footage: Footage, sequenceIndex: number)
     {
         this.content.currentSequence = null;
-        this.content.currentSequenceIndex = null;
+        this.content.currentSequenceIndex = 0;
         this.content.currentSequenceUrl = null;
 
         if (sequenceIndex < 0 || sequenceIndex > footage.sequences.length)
@@ -156,6 +156,8 @@ class CameraStore extends EventEmitter
             this.content.currentSequence = footage.sequences[sequenceIndex];
             this.content.currentSequenceIndex = sequenceIndex;
             this.content.currentSequenceUrl = data;
+
+            this.emit(Events.CameraSequencesLoaded);
         });
     }
 }

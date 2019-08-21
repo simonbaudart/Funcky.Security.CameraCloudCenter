@@ -49,23 +49,3 @@ export class CameraList extends React.Component<CameraListProps, CameraListState
         </>;
     }
 }
-/*
-
-export const CameraList = (props: CameraListProps) =>
-{
-    return <>
-        {
-            props.cameras.map((camera) =>
-            {
-                return (
-                    <div key={camera.key} className="row pb-3">
-                        <div className="col-12">
-                            <CameraSummary camera={camera} selectCamera={props.selectCamera}/>
-                        </div>
-                    </div>);
-            })
-        }
-    </>;
-};
-
-*/
