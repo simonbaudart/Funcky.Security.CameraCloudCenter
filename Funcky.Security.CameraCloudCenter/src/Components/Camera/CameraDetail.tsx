@@ -43,6 +43,7 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
     {
         CameraStore.addChangeListener(Events.CameraListLoaded, () => this.getStateFromStore());
         CameraStore.addChangeListener(Events.CameraFootagesLoaded, () => this.getStateFromStore());
+        CameraStore.addChangeListener(Events.CameraSequencesLoaded, () => this.getStateFromStore());
     }
 
     private getStateFromStore()
