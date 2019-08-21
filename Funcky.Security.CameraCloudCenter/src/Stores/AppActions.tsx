@@ -13,7 +13,7 @@ class AppActions
     public logoutSuccess()
     {
         AppDispatcher.dispatch({
-            actionType: Actions.LoginSuccess
+            actionType: Actions.LogoutSuccess
         });
     }
 }

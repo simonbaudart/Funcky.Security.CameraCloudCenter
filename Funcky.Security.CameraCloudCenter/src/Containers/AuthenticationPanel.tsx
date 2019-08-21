@@ -52,8 +52,8 @@ class AuthenticationPanelComponent extends React.Component<AuthenticationPanelPr
         {
             AjaxService.postNoReturn("api/login", data).then(() =>
             {
-                this.props.context.setRoute(Routes.dashboard);
                 this.setState({ loginInProgress: false });
+                this.props.context.setRoute(Routes.dashboard);
 
                 AppActions.loginSuccess();
 

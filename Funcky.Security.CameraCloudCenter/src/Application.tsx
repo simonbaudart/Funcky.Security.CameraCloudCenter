@@ -8,10 +8,13 @@ import { AjaxService } from "./Services";
 import { AuthenticationPanel, CameraPanel } from "./Containers";
 
 import AppActions from "./Stores/AppActions";
+import Events from "./Stores/Events";
+import UserStore from "./Stores/UserStore";
 
 interface ApplicationState
 {
     context: ContextContent;
+    userConnected: boolean;
 }
 
 export class Application extends React.Component<any, ApplicationState>
@@ -25,25 +28,41 @@ export class Application extends React.Component<any, ApplicationState>
                 route: document.location.hash.replace("#", "") || "/",
                 setRoute: this.setRoute.bind(this),
                 updateContext: this.updateContext.bind(this),
-            }
-        };
+            },
+            userConnected: true
+    };
     }
 
     public componentDidMount()
     {
+        AppActions.loginSuccess();
         this.setRoute(Routes.dashboard);
+        this.checkIdentity();
 
+        UserStore.addChangeListener(Events.UserChanged, () => this.checkIdentity());
+    }
+
+    private checkIdentity()
+    {
         AjaxService.get("api/isAuthenticated").then(() =>
-        {
-            AppActions.loginSuccess();
-            this.setRoute(Routes.dashboard);
-        })
+            {
+                if (!this.state.userConnected)
+                {
+                    this.setRoute(Routes.dashboard);
+                    AppActions.loginSuccess();
+                    this.setState({ userConnected: true });
+                }
+            })
             .catch((code: number) =>
             {
                 if (code === 401)
                 {
-                    AppActions.logoutSuccess();
-                    this.setRoute(Routes.login);
+                    if (this.state.userConnected)
+                    {
+                        this.setRoute(Routes.login);
+                        AppActions.logoutSuccess();
+                        this.setState({ userConnected: false });
+                    }
                 }
             });
     }
