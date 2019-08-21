@@ -1,13 +1,7 @@
 import React from "react";
-import { addDays, format } from "date-fns";
 
 import { CameraDetail, CameraList } from "../Components";
-import { Camera, Footage, FootageUrl } from "../Models";
-import { AjaxService } from "../Services";
 import { ContextAwareProps, withContext } from "../Hoc";
-
-import Events from "../Stores/Events";
-import DashboardStore from "../Stores/DashboardStore";
 
 interface CameraPanelProps extends ContextAwareProps
 {
@@ -15,9 +9,8 @@ interface CameraPanelProps extends ContextAwareProps
 
 interface CameraPanelState
 {
-    displayedDate: Date;
+    /*displayedDate: Date;
 
-    cameras: Camera[];
     currentCamera?: Camera;
 
     footages: Footage[];
@@ -25,12 +18,12 @@ interface CameraPanelState
 
     currentSequence?: Footage;
     currentSequenceIndex?: number;
-    currentSequenceUrl?: FootageUrl;
+    currentSequenceUrl?: FootageUrl;*/
 }
 
 class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanelState>
 {
-    constructor(props: CameraPanelProps)
+    /*constructor(props: CameraPanelProps)
     {
         super(props);
 
@@ -41,11 +34,6 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
         };
 
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
-    }
-
-    componentDidMount()
-    {
-        DashboardStore.addChangeListener(Events.CameraListLoaded, () => this.setState({ cameras: DashboardStore.getContent().cameras }));
     }
 
     private handleKeyDown(e)
@@ -71,12 +59,6 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
         }
     }
 
-    private selectCamera(camera: Camera)
-    {
-        this.setState({ currentCamera: camera });
-        this.loadFootages(camera, this.state.displayedDate);
-    }
-
     private jumpDays(jump: number)
     {
         if (!this.state.currentCamera)
@@ -88,30 +70,6 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
         this.setState({ displayedDate: newDate });
 
         this.loadFootages(this.state.currentCamera, newDate);
-    }
-
-    private loadFootages(camera: Camera, date: Date)
-    {
-        this.setState({ footages: [], currentFootage: undefined });
-
-        const formattedDate: string = format(date, 'YYYYMMDD');
-
-        AjaxService.get<any[]>(`api/footages/${camera.key}?date=${formattedDate}`).then((footagesEvent: Footage[]) =>
-        {
-            let firstFootage: Footage | undefined = undefined;
-
-            if (footagesEvent.length > 0)
-            {
-                firstFootage = footagesEvent[0];
-            }
-
-            this.setState({ footages: footagesEvent, currentFootage: firstFootage });
-
-            if (firstFootage)
-            {
-                this.loadSequence(camera, firstFootage, 0);
-            }
-        });
     }
 
     private previousFootage()
@@ -232,17 +190,17 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
         }
 
         return <></>;
-    }
+    }*/
 
     render()
     {
         return <>
             <div className="row pb-3">
                 <div className="col-12 col-lg-3">
-                    <CameraList cameras={this.state.cameras} selectCamera={this.selectCamera.bind(this)} />
+                    <CameraList />
                 </div>
                 <div className="col-12 col-lg-9">
-                    {this.displayCameraDetail()}
+                    <CameraDetail />
                 </div>
             </div>
         </>;

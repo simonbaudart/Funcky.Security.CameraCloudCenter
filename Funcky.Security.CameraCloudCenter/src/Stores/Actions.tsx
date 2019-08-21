@@ -1,6 +1,8 @@
 const Actions = {
     LoginSuccess: "login.success",
-    LogoutSuccess: "logout.success"
+    LogoutSuccess: "logout.success",
+
+    CameraSelect: "camera.select"
 };
 
 export default Actions;
