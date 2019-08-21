@@ -1,10 +1,13 @@
 ﻿import React from "react";
 
-import {ContextContent} from "./Models";
-import {ContextProvider, Menu} from "./Components";
-import {Route, Routes} from "./Routing";
+import { ContextContent } from "./Models";
+import { ContextProvider, Menu } from "./Components";
+import { Route, Routes } from "./Routing";
+import { AjaxService } from "./Services";
 
-import {AuthenticationPanel, CameraPanel} from "./Containers";
+import { AuthenticationPanel, CameraPanel } from "./Containers";
+
+import AppActions from "./Stores/AppActions";
 
 interface ApplicationState
 {
@@ -22,17 +25,32 @@ export class Application extends React.Component<any, ApplicationState>
                 route: document.location.hash.replace("#", "") || "/",
                 setRoute: this.setRoute.bind(this),
                 updateContext: this.updateContext.bind(this),
-            }            
+            }
         };
     }
 
     public componentDidMount()
     {
+        this.setRoute(Routes.dashboard);
+
+        AjaxService.get("api/isAuthenticated").then(() =>
+        {
+            AppActions.loginSuccess();
+            this.setRoute(Routes.dashboard);
+        })
+            .catch((code: number) =>
+            {
+                if (code === 401)
+                {
+                    AppActions.logoutSuccess();
+                    this.setRoute(Routes.login);
+                }
+            });
     }
 
     public updateContext(context: ContextContent)
     {
-        this.setState({context: context});
+        this.setState({ context: context });
     }
 
     public setRoute = (route: string) =>
@@ -49,7 +67,7 @@ export class Application extends React.Component<any, ApplicationState>
             <div className="container-fluid">
                 <div className="row pb-3">
                     <div className="col">
-                        <Menu/>
+                        <Menu />
                     </div>
                 </div>
 
@@ -58,7 +76,7 @@ export class Application extends React.Component<any, ApplicationState>
                 </Route>
 
                 <Route path={Routes.login}>
-                    <AuthenticationPanel/>
+                    <AuthenticationPanel />
                 </Route>
             </div>
         </ContextProvider>;

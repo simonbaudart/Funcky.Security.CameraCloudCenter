@@ -1,9 +1,10 @@
 ﻿import React from 'react';
 
-import {withContext, ContextAwareProps} from "../../Hoc";
-import {Routes} from "../../Routing";
-import {AjaxService} from "../../Services";
-import {Actions, AppDispatcher} from "../../Flux";
+import { withContext, ContextAwareProps } from "../../Hoc";
+import { Routes } from "../../Routing";
+import { AjaxService } from "../../Services";
+
+import AppActions from "../../Stores/AppActions";
 
 const MenuComponent = (props: ContextAwareProps) =>
 {
@@ -11,9 +12,7 @@ const MenuComponent = (props: ContextAwareProps) =>
     {
         AjaxService.postNoData('api/logout').then(() =>
         {
-            AppDispatcher.dispatch({
-                actionType: Actions.LogoutSuccess
-            })
+            AppActions.logoutSuccess();
         });
     };
 
@@ -38,7 +37,7 @@ const MenuComponent = (props: ContextAwareProps) =>
         <a className="navbar-brand" href="#">Camera Cloud Center</a>
 
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon">
             </span>
         </button>
