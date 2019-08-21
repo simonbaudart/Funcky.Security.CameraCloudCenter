@@ -64,6 +64,10 @@ class CameraStore extends EventEmitter
                     const footage: Footage = payload.data;
                     this.selectFootage(footage);
                     break;
+                case Actions.FootageJump:
+                    const footageJump: number = payload.data;
+                    this.jumpFootage(footageJump);
+                    break;
                 case Actions.SequenceJump:
                     const sequencesJump: number = payload.data;
                     this.jumpSequence(sequencesJump);

@@ -52,6 +52,22 @@ class CameraActions
             data: -1
         });
     }
+
+    public previousFootage()
+    {
+        AppDispatcher.dispatch({
+            actionType: Actions.FootageJump,
+            data: -1
+        });
+    }
+
+    public nextFootage()
+    {
+        AppDispatcher.dispatch({
+            actionType: Actions.FootageJump,
+            data: 1
+        });
+    }
 }
 
 export default new CameraActions()
