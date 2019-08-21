@@ -31,7 +31,7 @@ export class Application extends React.Component<any, ApplicationState>
 
     public componentDidMount()
     {
-        this.setRoute(Routes.login);
+        this.setRoute(Routes.dashboard);
 
         AjaxService.get("api/isAuthenticated").then(() =>
         {
