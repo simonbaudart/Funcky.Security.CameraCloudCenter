@@ -3,6 +3,7 @@ import { Footage, FootageUrl } from "../../Models";
 
 import Events from "../../Stores/Events";
 import CameraStore from "../../Stores/CameraStore";
+import CameraActions from "../../Stores/CameraActions";
 
 interface SequencesListProps
 {
@@ -86,7 +87,7 @@ export class SequencesList extends React.Component<SequencesListProps, Sequences
                     onClick={(e) =>
                     {
                         e.preventDefault();
-                        // TODO props.jumpSequence(-1);
+                        CameraActions.previousSequence();
                     }}>Previous</button>
             </div>
             <div className="col-6">
@@ -94,7 +95,7 @@ export class SequencesList extends React.Component<SequencesListProps, Sequences
                     onClick={(e) =>
                     {
                         e.preventDefault();
-                        // TODO props.jumpSequence(1);
+                        CameraActions.nextSequence();
                     }}>Next</button>
             </div>
         </div>;

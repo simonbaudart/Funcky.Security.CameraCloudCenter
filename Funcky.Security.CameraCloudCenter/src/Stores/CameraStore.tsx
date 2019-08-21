@@ -64,6 +64,10 @@ class CameraStore extends EventEmitter
                     const footage: Footage = payload.data;
                     this.selectFootage(footage);
                     break;
+                case Actions.SequenceJump:
+                    const sequencesJump: number = payload.data;
+                    this.jumpSequence(sequencesJump);
+                    break;
             }
         });
 
@@ -147,7 +151,6 @@ class CameraStore extends EventEmitter
     private loadSequence()
     {
         this.content.currentSequence = null;
-        this.content.currentSequenceIndex = 0;
         this.content.currentSequenceUrl = null;
 
         if (!this.content.currentCamera || !this.content.currentFootage)
@@ -159,6 +162,8 @@ class CameraStore extends EventEmitter
         {
             return;
         }
+
+        console.log(this.content);
 
         const currentFootage = this.content.currentFootage.sequences[this.content.currentSequenceIndex];
         AjaxService.get('api/footage/' + this.content.currentCamera.key + '?id=' + currentFootage.id).then((data: FootageUrl) =>
@@ -191,6 +196,63 @@ class CameraStore extends EventEmitter
     private selectFootage(footage: Footage)
     {
         this.content.currentFootage = footage;
+        this.loadSequence();
+    }
+
+    private jumpSequence(jump: number)
+    {
+        if (!this.content.currentCamera || !this.content.currentFootage)
+        {
+            return;
+        }
+
+        let currentSequenceIndex = 0;
+
+        if (this.content.currentSequenceIndex)
+        {
+            currentSequenceIndex = this.content.currentSequenceIndex;
+        }
+
+        const newSequenceIndex = currentSequenceIndex + jump;
+
+        if (newSequenceIndex < 0)
+        {
+            this.jumpFootage(-1);
+            return;
+        }
+
+        if (newSequenceIndex >= this.content.currentFootage.sequences.length)
+        {
+            this.jumpFootage(1);
+            return;
+        }
+
+        this.content.currentSequenceIndex = newSequenceIndex;
+
+        this.loadSequence();
+    }
+
+    private jumpFootage(jump: number)
+    {
+        if (!this.content.currentFootage ||!this.content.footages)
+        {
+            return;
+        }
+
+        const currentFootageIndex = this.content.footages.indexOf(this.content.currentFootage);
+        const newFootageIndex = currentFootageIndex + jump;
+
+        if (newFootageIndex < 0 || newFootageIndex >= this.content.footages.length)
+        {
+            return;
+        }
+
+        const newFootage = this.content.footages[newFootageIndex];
+        const newSequenceIndex = jump > 0 ? 0 : newFootage.sequences.length - 1;
+
+        this.content.currentFootage = newFootage;
+        this.content.currentSequenceIndex = newSequenceIndex;
+
         this.loadSequence();
     }
 } 

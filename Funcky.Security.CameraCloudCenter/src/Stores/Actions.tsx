@@ -6,7 +6,9 @@ const Actions = {
 
     DateJump: "date.jump",
 
-    FootageSelect: "footage.select"
+    FootageSelect: "footage.select",
+
+    SequenceJump: "sequence.jump"
 };
 
 export default Actions;

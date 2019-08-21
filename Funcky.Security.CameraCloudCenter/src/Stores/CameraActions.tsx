@@ -36,6 +36,22 @@ class CameraActions
             data: footage
         });
     }
+
+    public nextSequence()
+    {
+        AppDispatcher.dispatch({
+            actionType: Actions.SequenceJump,
+            data: 1
+        });
+    }
+
+    public previousSequence()
+    {
+        AppDispatcher.dispatch({
+            actionType: Actions.SequenceJump,
+            data: -1
+        });
+    }
 }
 
 export default new CameraActions()
