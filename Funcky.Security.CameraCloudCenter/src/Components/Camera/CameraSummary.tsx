@@ -1,14 +1,14 @@
 ﻿import React from "react";
 import {Camera} from "../../Models";
-import {ContextAwareProps, withContext} from "../../Hoc";
 
-interface CameraSummaryProps extends ContextAwareProps
+import CameraActions from "../../Stores/CameraActions";
+
+interface CameraSummaryProps
 {
     camera: Camera;
-    selectCamera: (camera: Camera) => void;
 }
 
-const CameraSummaryComponent = (props: CameraSummaryProps) =>
+export const CameraSummary = (props: CameraSummaryProps) =>
 {
 
     return <div className="card mb-3">
@@ -31,10 +31,8 @@ const CameraSummaryComponent = (props: CameraSummaryProps) =>
             <a href="#" className="btn btn-primary w-100" onClick={(e) =>
             {
                 e.preventDefault();
-                props.selectCamera(props.camera);
+                CameraActions.selectCamera(props.camera);
             }}>Show details</a>
         </div>
     </div>;
 };
-
-export const CameraSummary = withContext<CameraSummaryProps>(CameraSummaryComponent);
