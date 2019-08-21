@@ -10,6 +10,7 @@ import Actions from "./Actions";
 import Events from "./Events";
 
 import { AjaxService } from "../Services";
+import { Constants } from "../Constants";
 
 interface CameraContent
 {
@@ -29,7 +30,7 @@ interface CameraContent
 
 class CameraStore extends EventEmitter
 {
-    private content: CameraContent;
+    private readonly content: CameraContent;
 
     constructor()
     {
@@ -129,7 +130,7 @@ class CameraStore extends EventEmitter
             return;
         }
 
-        const formattedDate: string = format(this.content.displayedDate, 'YYYYMMDD');
+        const formattedDate: string = format(this.content.displayedDate, Constants.TechnicalDateFormat);
 
         AjaxService.get<any[]>(`api/footages/${this.content.currentCamera.key}?date=${formattedDate}`).then((footagesEvent: Footage[]) =>
         {
@@ -237,7 +238,7 @@ class CameraStore extends EventEmitter
 
     private jumpFootage(jump: number)
     {
-        if (!this.content.currentFootage ||!this.content.footages)
+        if (!this.content.currentFootage || !this.content.footages)
         {
             return;
         }
@@ -258,6 +259,6 @@ class CameraStore extends EventEmitter
 
         this.loadSequence();
     }
-} 
+}
 
 export default new CameraStore();
