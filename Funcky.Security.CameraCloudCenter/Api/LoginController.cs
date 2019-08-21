@@ -104,5 +104,21 @@ namespace Funcky.Security.CameraCloudCenter.Api
             await this.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return this.Ok();
         }
+
+        /// <summary>
+        /// Determines whether this user is authenticated.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/isAuthenticated")]
+        public ActionResult IsAuthenticated()
+        {
+            if (this.User.Identity.IsAuthenticated)
+            {
+                return this.Ok(new {authenticated = true});
+            }
+
+            return this.Unauthorized();
+        }
     }
 }

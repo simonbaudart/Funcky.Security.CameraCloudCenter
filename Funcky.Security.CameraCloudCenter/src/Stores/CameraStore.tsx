@@ -90,15 +90,7 @@ class CameraStore extends EventEmitter
             this.content.currentSequenceUrl = null;
 
             this.emit(Events.CameraListLoaded);
-        })
-            .catch((code: number) =>
-            {
-                if (code === 401)
-                {
-                    // TODO : move it
-                    // this.props.context.setRoute(Routes.login);
-                }
-            });
+        });
     }
 
     private selectCamera(camera: Camera)
