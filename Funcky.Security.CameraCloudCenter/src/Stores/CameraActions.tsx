@@ -12,6 +12,22 @@ class CameraActions
             data: camera
         });
     }
+
+    public nextDate()
+    {
+        AppDispatcher.dispatch({
+            actionType: Actions.DateJump,
+            data: 1
+        });
+    }
+
+    public previousDate()
+    {
+        AppDispatcher.dispatch({
+            actionType: Actions.DateJump,
+            data: -1
+        });
+    }
 }
 
 export default new CameraActions()

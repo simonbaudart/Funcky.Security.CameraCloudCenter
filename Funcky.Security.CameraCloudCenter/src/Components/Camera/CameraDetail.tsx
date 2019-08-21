@@ -6,6 +6,7 @@ import { Camera, Footage } from "../../Models";
 
 import Events from "../../Stores/Events";
 import CameraStore from "../../Stores/CameraStore";
+import CameraActions from "../../Stores/CameraActions";
 
 import { SequencesList } from "./SequencesList";
 
@@ -78,13 +79,13 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
                             onClick={(e) =>
                             {
                                 e.preventDefault();
-                                // TODO : props.jumpDays(-1);
+                                CameraActions.previousDate();
                             }}>&lt;</button>
                         <button type="button" className="btn btn-primary"
                             onClick={(e) =>
                             {
                                 e.preventDefault();
-                                // TODO : props.jumpDays(1);
+                                CameraActions.nextDate();
                             }}>&gt;</button>
                     </h3>
 

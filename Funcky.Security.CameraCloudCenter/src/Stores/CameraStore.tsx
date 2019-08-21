@@ -1,4 +1,4 @@
-﻿import { /*addDays, */format } from "date-fns";
+﻿import { addDays, format } from "date-fns";
 
 import AppDispatcher from "./AppDispatcher";
 import { EventEmitter } from "events";
@@ -56,6 +56,10 @@ class CameraStore extends EventEmitter
                     const camera: Camera = payload.data;
                     this.selectCamera(camera);
                     break;
+                case Actions.DateJump:
+                    const days: number = payload.data;
+                    this.jumpDays(days);
+                    break;
             }
         });
 
@@ -97,10 +101,10 @@ class CameraStore extends EventEmitter
     {
         this.content.currentCamera = camera;
 
-        this.loadFootages(camera, this.content.displayedDate);
+        this.loadFootages();
     }
 
-    private loadFootages(camera: Camera, date: Date)
+    private loadFootages()
     {
         this.content.footages = null;
         this.content.currentFootage = null;
@@ -108,9 +112,14 @@ class CameraStore extends EventEmitter
         this.content.currentSequenceIndex = 0;
         this.content.currentSequenceUrl = null;
 
-        const formattedDate: string = format(date, 'YYYYMMDD');
+        if (!this.content.currentCamera)
+        {
+            return;
+        }
 
-        AjaxService.get<any[]>(`api/footages/${camera.key}?date=${formattedDate}`).then((footagesEvent: Footage[]) =>
+        const formattedDate: string = format(this.content.displayedDate, 'YYYYMMDD');
+
+        AjaxService.get<any[]>(`api/footages/${this.content.currentCamera.key}?date=${formattedDate}`).then((footagesEvent: Footage[]) =>
         {
             let firstFootage: Footage | null = null;
 
@@ -124,33 +133,55 @@ class CameraStore extends EventEmitter
 
             if (firstFootage)
             {
-                this.loadSequence(camera, firstFootage, 0);
+                this.loadSequence();
             }
 
             this.emit(Events.CameraFootagesLoaded);
         });
     }
 
-    private loadSequence(camera: Camera, footage: Footage, sequenceIndex: number)
+    private loadSequence()
     {
         this.content.currentSequence = null;
         this.content.currentSequenceIndex = 0;
         this.content.currentSequenceUrl = null;
 
-        if (sequenceIndex < 0 || sequenceIndex > footage.sequences.length)
+        if (!this.content.currentCamera || !this.content.currentFootage)
         {
             return;
         }
 
-        const currentFootage = footage.sequences[sequenceIndex];
-        AjaxService.get('api/footage/' + camera.key + '?id=' + currentFootage.id).then((data: FootageUrl) =>
+        if (this.content.currentSequenceIndex < 0 || this.content.currentSequenceIndex > this.content.currentFootage.sequences.length)
         {
-            this.content.currentSequence = footage.sequences[sequenceIndex];
-            this.content.currentSequenceIndex = sequenceIndex;
+            return;
+        }
+
+        const currentFootage = this.content.currentFootage.sequences[this.content.currentSequenceIndex];
+        AjaxService.get('api/footage/' + this.content.currentCamera.key + '?id=' + currentFootage.id).then((data: FootageUrl) =>
+        {
+            if (!this.content.currentCamera || !this.content.currentFootage)
+            {
+                return;
+            }
+
+            this.content.currentSequence = this.content.currentFootage.sequences[this.content.currentSequenceIndex];
+            this.content.currentSequenceIndex = this.content.currentSequenceIndex;
             this.content.currentSequenceUrl = data;
 
             this.emit(Events.CameraSequencesLoaded);
         });
+    }
+
+    private jumpDays(jump: number)
+    {
+        if (!this.content.currentCamera)
+        {
+            return;
+        }
+
+        this.content.displayedDate = addDays(this.content.displayedDate, jump);
+
+        this.loadFootages();
     }
 }
 
