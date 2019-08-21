@@ -4,7 +4,9 @@ const Actions = {
 
     CameraSelect: "camera.select",
 
-    DateJump: "date.jump"
+    DateJump: "date.jump",
+
+    FootageSelect: "footage.select"
 };
 
 export default Actions;

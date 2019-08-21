@@ -60,6 +60,10 @@ class CameraStore extends EventEmitter
                     const days: number = payload.data;
                     this.jumpDays(days);
                     break;
+                case Actions.FootageSelect:
+                    const footage: Footage = payload.data;
+                    this.selectFootage(footage);
+                    break;
             }
         });
 
@@ -183,6 +187,12 @@ class CameraStore extends EventEmitter
 
         this.loadFootages();
     }
-}
+
+    private selectFootage(footage: Footage)
+    {
+        this.content.currentFootage = footage;
+        this.loadSequence();
+    }
+} 
 
 export default new CameraStore();

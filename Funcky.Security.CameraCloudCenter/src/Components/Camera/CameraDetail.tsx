@@ -109,7 +109,7 @@ export class CameraDetail extends React.Component<CameraDetailProps, CameraDetai
                             } onClick={(e) =>
                             {
                                 e.preventDefault();
-                                // TODO : props.selectFootage(footage, 0);
+                                CameraActions.selectFootage(footage);
                             }}>
                                 {footage.title}
                             </button>;

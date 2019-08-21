@@ -1,7 +1,7 @@
 ﻿import Actions from "./Actions";
 import AppDispatcher from "./AppDispatcher";
 
-import {Camera} from "Models";
+import {Camera, Footage} from "Models";
 
 class CameraActions
 {
@@ -26,6 +26,14 @@ class CameraActions
         AppDispatcher.dispatch({
             actionType: Actions.DateJump,
             data: -1
+        });
+    }
+
+    public selectFootage(footage: Footage)
+    {
+        AppDispatcher.dispatch({
+            actionType: Actions.FootageSelect,
+            data: footage
         });
     }
 }
