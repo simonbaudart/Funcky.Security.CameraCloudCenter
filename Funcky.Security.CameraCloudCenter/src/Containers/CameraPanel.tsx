@@ -4,11 +4,10 @@ import { addDays, format } from "date-fns";
 import { CameraDetail, CameraList } from "../Components";
 import { Camera, Footage, FootageUrl } from "../Models";
 import { AjaxService } from "../Services";
-import { Routes } from "../Routing";
 import { ContextAwareProps, withContext } from "../Hoc";
 
 import Events from "../Stores/Events";
-import UserStore from "../Stores/UserStore";
+import DashboardStore from "../Stores/DashboardStore";
 
 interface CameraPanelProps extends ContextAwareProps
 {
@@ -46,13 +45,7 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
 
     componentDidMount()
     {
-        this.loadCameras();
-
-        UserStore.addChangeListener(Events.UserChanged,
-            () =>
-            {
-                this.loadCameras();
-            });
+        DashboardStore.addChangeListener(Events.CameraListLoaded, () => this.setState({ cameras: DashboardStore.getContent().cameras }));
     }
 
     private handleKeyDown(e)
@@ -76,23 +69,6 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
                 e.preventDefault();
                 break;
         }
-    }
-
-    private loadCameras()
-    {
-        this.setState({ cameras: [], currentCamera: undefined });
-
-        AjaxService.get<Camera[]>("/api/cameras").then((data) =>
-        {
-            this.setState({ cameras: data });
-        })
-            .catch((code: number) =>
-            {
-                if (code === 401)
-                {
-                    this.props.context.setRoute(Routes.login);
-                }
-            });
     }
 
     private selectCamera(camera: Camera)

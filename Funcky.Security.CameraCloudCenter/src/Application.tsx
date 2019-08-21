@@ -28,6 +28,7 @@ export class Application extends React.Component<any, ApplicationState>
 
     public componentDidMount()
     {
+        this.setRoute(Routes.login);
     }
 
     public updateContext(context: ContextContent)

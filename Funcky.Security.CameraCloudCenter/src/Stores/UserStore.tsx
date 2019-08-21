@@ -22,12 +22,12 @@ class UserStore extends EventEmitter
         });
     }
 
-    addChangeListener(eventName, callback)
+    public addChangeListener(eventName, callback)
     {
         this.on(eventName, callback);
     }
 
-    removeChangeListener(eventName, callback)
+    public removeChangeListener(eventName, callback)
     {
         this.removeListener(eventName, callback);
     }
