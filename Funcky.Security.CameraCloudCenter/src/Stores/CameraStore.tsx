@@ -178,7 +178,6 @@ class CameraStore extends EventEmitter
             }
 
             this.content.currentSequence = this.content.currentFootage.sequences[this.content.currentSequenceIndex];
-            this.content.currentSequenceIndex = this.content.currentSequenceIndex;
             this.content.currentSequenceUrl = data;
 
             this.emit(Events.CameraSequencesLoaded);
