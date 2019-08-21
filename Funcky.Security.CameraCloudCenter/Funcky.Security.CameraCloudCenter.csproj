@@ -13,6 +13,9 @@
 
   <ItemGroup>
     <None Remove="src\Components\Login\AuthenticationPanel.tsx" />
+    <None Remove="src\Stores\AppActions.tsx" />
+    <None Remove="src\Stores\Events.tsx" />
+    <None Remove="src\Stores\UserStore.tsx" />
   </ItemGroup>
 
   <ItemGroup>

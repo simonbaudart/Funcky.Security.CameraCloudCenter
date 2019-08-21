@@ -1,13 +1,14 @@
 import React from "react";
-import {addDays, format} from "date-fns";
+import { addDays, format } from "date-fns";
 
-import {CameraDetail, CameraList} from "../Components";
-import {Camera, Footage, FootageUrl} from "../Models";
-import {AjaxService} from "../Services";
-import {Routes} from "../Routing";
-import {ContextAwareProps, withContext} from "../Hoc";
-import {Actions, AppDispatcher} from "../Flux";
+import { CameraDetail, CameraList } from "../Components";
+import { Camera, Footage, FootageUrl } from "../Models";
+import { AjaxService } from "../Services";
+import { Routes } from "../Routing";
+import { ContextAwareProps, withContext } from "../Hoc";
 
+import Events from "../Stores/Events";
+import UserStore from "../Stores/UserStore";
 
 interface CameraPanelProps extends ContextAwareProps
 {
@@ -46,36 +47,31 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
     componentDidMount()
     {
         this.loadCameras();
-        
-        AppDispatcher.register((payload) => {
-            
-            switch (payload.actionType)
+
+        UserStore.addChangeListener(Events.UserChanged,
+            () =>
             {
-                case Actions.LogoutSuccess:
-                case Actions.LoginSuccess:
-                    this.loadCameras();
-                    break;
-            }
-        });
+                this.loadCameras();
+            });
     }
-    
+
     private handleKeyDown(e)
     {
-        switch(e.keyCode)
+        switch (e.keyCode)
         {
-            case 37 : //left
+            case 37: //left
                 e.preventDefault();
                 this.jumpSequence(-1);
                 break;
-            case 38 : //up
+            case 38: //up
                 this.jumpFootage(-1);
                 e.preventDefault();
                 break;
-            case 39 : //right
+            case 39: //right
                 e.preventDefault();
                 this.jumpSequence(1);
                 break;
-            case 40 : //down
+            case 40: //down
                 this.jumpFootage(1);
                 e.preventDefault();
                 break;
@@ -84,11 +80,11 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
 
     private loadCameras()
     {
-        this.setState({cameras: [], currentCamera: undefined});
+        this.setState({ cameras: [], currentCamera: undefined });
 
         AjaxService.get<Camera[]>("/api/cameras").then((data) =>
         {
-            this.setState({cameras: data});
+            this.setState({ cameras: data });
         })
             .catch((code: number) =>
             {
@@ -101,7 +97,7 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
 
     private selectCamera(camera: Camera)
     {
-        this.setState({currentCamera: camera});
+        this.setState({ currentCamera: camera });
         this.loadFootages(camera, this.state.displayedDate);
     }
 
@@ -113,14 +109,14 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
         }
 
         const newDate = addDays(this.state.displayedDate, jump);
-        this.setState({displayedDate: newDate});
+        this.setState({ displayedDate: newDate });
 
         this.loadFootages(this.state.currentCamera, newDate);
     }
 
     private loadFootages(camera: Camera, date: Date)
     {
-        this.setState({footages: [], currentFootage: undefined});
+        this.setState({ footages: [], currentFootage: undefined });
 
         const formattedDate: string = format(date, 'YYYYMMDD');
 
@@ -133,7 +129,7 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
                 firstFootage = footagesEvent[0];
             }
 
-            this.setState({footages: footagesEvent, currentFootage: firstFootage});
+            this.setState({ footages: footagesEvent, currentFootage: firstFootage });
 
             if (firstFootage)
             {
@@ -161,7 +157,7 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
 
         const currentFootageIndex = this.state.footages.indexOf(this.state.currentFootage);
         const newFootageIndex = currentFootageIndex + jump;
-        
+
         if (newFootageIndex < 0 || newFootageIndex >= this.state.footages.length)
         {
             return;
@@ -169,7 +165,7 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
 
         const newFootage = this.state.footages[newFootageIndex];
         const newSequenceIndex = jump > 0 ? 0 : newFootage.sequences.length - 1;
-        
+
         this.selectFootage(newFootage, newSequenceIndex);
     }
 
@@ -180,7 +176,7 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
             return;
         }
 
-        this.setState({currentFootage: footage});
+        this.setState({ currentFootage: footage });
         this.loadSequence(this.state.currentCamera, footage, sequenceIndex);
     }
 
@@ -244,18 +240,18 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
         if (this.state.currentCamera)
         {
             return <CameraDetail currentCamera={this.state.currentCamera}
-                                 displayedDate={this.state.displayedDate}
-                                 footages={this.state.footages}
+                displayedDate={this.state.displayedDate}
+                footages={this.state.footages}
 
-                                 currentFootage={this.state.currentFootage}
-                                 
-                                 currentSequence={this.state.currentSequence}
-                                 currentSequenceUrl={this.state.currentSequenceUrl}
-                                 currentSequenceIndex={this.state.currentSequenceIndex}
+                currentFootage={this.state.currentFootage}
 
-                                 jumpDays={this.jumpDays.bind(this)}
-                                 selectFootage={this.selectFootage.bind(this)}
-                                 jumpSequence={this.jumpSequence.bind(this)}
+                currentSequence={this.state.currentSequence}
+                currentSequenceUrl={this.state.currentSequenceUrl}
+                currentSequenceIndex={this.state.currentSequenceIndex}
+
+                jumpDays={this.jumpDays.bind(this)}
+                selectFootage={this.selectFootage.bind(this)}
+                jumpSequence={this.jumpSequence.bind(this)}
             />;
         }
 
@@ -267,7 +263,7 @@ class CameraPanelComponent extends React.Component<CameraPanelProps, CameraPanel
         return <>
             <div className="row pb-3">
                 <div className="col-12 col-lg-3">
-                    <CameraList cameras={this.state.cameras} selectCamera={this.selectCamera.bind(this)}/>
+                    <CameraList cameras={this.state.cameras} selectCamera={this.selectCamera.bind(this)} />
                 </div>
                 <div className="col-12 col-lg-9">
                     {this.displayCameraDetail()}
