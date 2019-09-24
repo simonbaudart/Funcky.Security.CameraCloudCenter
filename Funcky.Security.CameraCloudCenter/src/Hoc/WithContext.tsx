@@ -1,6 +1,6 @@
 ﻿// Pour faciliter l'utilisation du state, un HoC est créé
 // Il envoie au composant le contexte dans la propriété contexte
-// si d'autres propriétés doivent être renvoyées, il faut hériter de MyCphContextAwareProps
+// si d'autres propriétés doivent être renvoyées, il faut hériter de ContextAwareProps
 
 import React from "react";
 
